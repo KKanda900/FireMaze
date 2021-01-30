@@ -1,6 +1,6 @@
 import pygame
 from pygame_widgets import Button
-import sys, re
+import sys, re, random
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -13,7 +13,7 @@ class MazeGUI:
     x, y = 0, 0
     cell_size = 20
 
-    def build_maze(self, screen, size):
+    def build_maze(self, screen, size, probability):
         for i in range(0,size[0]):
             self.x = 20
             self.y += 20
@@ -25,8 +25,13 @@ class MazeGUI:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                     pygame.draw.rect(screen, GREEN, cell)
                 else:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                    pygame.draw.rect(screen, BLACK, cell, 1) # the 1 here is to define thickness of the cell
+                    rand_gen = round(random.uniform(0,1),1)
+                    if rand_gen == probability:
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
+                        pygame.draw.rect(screen, BLACK, cell)
+                    else: 
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
+                        pygame.draw.rect(screen, BLACK, cell, 1) # the 1 here is to define thickness of the cell
                 pygame.display.update()
                 self.x+=20
 
@@ -36,7 +41,9 @@ def start():
         print("Incorrect Usage: python MazeGUI.py <rows> <cols> <probability>")
         sys.exit(1)
 
+    # command line arguments
     dim = [int(sys.argv[1]), int(sys.argv[2])]
+    probability = float(sys.argv[3])
 
     # inital conditions to start pygame
     pygame.init()
@@ -45,17 +52,9 @@ def start():
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
-    
-    # buttons to conduct various graphing algorithms: dfs, bfs, and a*
-    dfs = Button(screen, 5, 500, 100, 30, text='Run DFS', fontSize=20, margin=20, inactiveColour=RED, pressedColour=BLUE, radius=20, onClick=None)
-    dfs.draw()
-    bfs = Button(screen, 60, 500, 100, 30, text='Run BFS', fontSize=20, margin=20, inactiveColour=RED, pressedColour=BLUE, radius=20, onClick=None)
-    bfs.draw()
-    a_star = Button(screen, 100, 500, 100, 30, text='Run A*', fontSize=20, margin=20, inactiveColour=RED, pressedColour=BLUE, radius=20, onClick=None)
-    a_star.draw() 
 
     maze = MazeGUI()
-    maze.build_maze(screen, dim)
+    maze.build_maze(screen, dim, probability)
     running = True
     index = 0
     while running:
@@ -64,11 +63,6 @@ def start():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-
-        # listen for events
-        dfs.listen(events)
-        bfs.listen(events)
-        a_star.listen(events)
 
         # update pygame's display to display everything
         pygame.display.update()
