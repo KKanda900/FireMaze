@@ -15,6 +15,7 @@ class MazeGUI:
 
     def build_maze(self, screen, size, probability):
         obstacles = (size*size)*probability # if the maze area is 100 then there should be only 10 obstacles generated
+        obstacles_created = 0
         for i in range(0,size):
             self.x = 20
             self.y += 20
@@ -31,16 +32,19 @@ class MazeGUI:
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell)
                         obstacles -= 1
+                        obstacles_created+=1
                     else: 
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell, 1) 
                 pygame.display.update()
                 self.x+=20
+        
+        print(obstacles_created)
 
 def start():
 
     if(len(sys.argv) != 3):
-        print("Incorrect Usage: python MazeGUI.py <rows> <cols> <probability>")
+        print("Incorrect Usage: python MazeGUI.py <dim> <probability>")
         sys.exit(1)
 
     # command line arguments
