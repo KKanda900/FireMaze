@@ -14,6 +14,7 @@ class MazeGUI:
     cell_size = 20
 
     def build_maze(self, screen, size, probability):
+        obstacles = (size[0]*size[1])*probability # if the maze area is 100 then there should be only 10 obstacles generated
         for i in range(0,size[0]):
             self.x = 20
             self.y += 20
@@ -25,13 +26,15 @@ class MazeGUI:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                     pygame.draw.rect(screen, GREEN, cell)
                 else:
-                    rand_gen = round(random.uniform(0,1),1)
-                    if rand_gen == probability:
+                    arr = [0,1] # these will represent random choices
+                    print("there will be {} obstacles".format(obstacles))
+                    if random.choice(arr) == 0 and obstacles != 0:
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell)
+                        obstacles -= 1
                     else: 
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                        pygame.draw.rect(screen, BLACK, cell, 1) # the 1 here is to define thickness of the cell
+                        pygame.draw.rect(screen, BLACK, cell, 1) 
                 pygame.display.update()
                 self.x+=20
 
