@@ -27,7 +27,6 @@ class MazeGUI:
                     pygame.draw.rect(screen, GREEN, cell)
                 else:
                     arr = [0,1] # these will represent random choices
-                    print("there will be {} obstacles".format(obstacles))
                     if random.choice(arr) == 0 and obstacles != 0:
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell)
