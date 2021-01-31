@@ -14,15 +14,15 @@ class MazeGUI:
     cell_size = 20
 
     def build_maze(self, screen, size, probability):
-        obstacles = (size[0]*size[1])*probability # if the maze area is 100 then there should be only 10 obstacles generated
-        for i in range(0,size[0]):
+        obstacles = (size*size)*probability # if the maze area is 100 then there should be only 10 obstacles generated
+        for i in range(0,size):
             self.x = 20
             self.y += 20
-            for j in range(0,size[1]):
+            for j in range(0,size):
                 if i == 0 and j == 0: # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                     pygame.draw.rect(screen, YELLOW, cell)
-                elif i == size[1]-1 and j == size[1]-1:
+                elif i == size-1 and j == size-1:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                     pygame.draw.rect(screen, GREEN, cell)
                 else:
@@ -39,18 +39,18 @@ class MazeGUI:
 
 def start():
 
-    if(len(sys.argv) != 4):
+    if(len(sys.argv) != 3):
         print("Incorrect Usage: python MazeGUI.py <rows> <cols> <probability>")
         sys.exit(1)
 
     # command line arguments
-    dim = [int(sys.argv[1]), int(sys.argv[2])]
-    probability = float(sys.argv[3])
+    dim = int(sys.argv[1])
+    probability = float(sys.argv[2])
 
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((500, 500))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
