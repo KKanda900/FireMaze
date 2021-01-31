@@ -1,6 +1,7 @@
 import pygame
 from pygame_widgets import Button
 import sys, re, random
+import numpy
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -14,34 +15,49 @@ class MazeGUI:
     cell_size = 20
 
     def build_maze(self, screen, size, probability):
-        obstacles = (size*size)*probability # if the maze area is 100 then there should be only 10 obstacles generated
-        for i in range(0,size):
-            self.x = 20
-            self.y += 20
-            for j in range(0,size):
-                if i == 0 and j == 0: # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                    pygame.draw.rect(screen, YELLOW, cell)
-                elif i == size-1 and j == size-1:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                    pygame.draw.rect(screen, GREEN, cell)
-                else:
-                    arr = [0,1] # these will represent random choices
-                    print("there will be {} obstacles".format(obstacles))
-                    if random.choice(arr) == 0 and obstacles != 0:
-                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                        pygame.draw.rect(screen, BLACK, cell)
-                        obstacles -= 1
-                    else: 
-                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
-                        pygame.draw.rect(screen, BLACK, cell, 1) 
-                pygame.display.update()
-                self.x+=20
+        obstacle_num = 0  # See if the amount of obstacles required are 0 or not
+        obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles generated
+        tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
+        while obstacles != 0:
+            for i in range(0,size):
+                if obstacle_num == 0:
+                    self.x = 20
+                    self.y += 20
+                for j in range(0,size):
+                    if i == 0 and j == 0: # this is what we will define as a start node with yellow
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                        pygame.draw.rect(screen, YELLOW, cell)
+                    elif i == size-1 and j == size-1:
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                        pygame.draw.rect(screen, GREEN, cell)
+                    else:
+                        arr = [0,1] # these will represent random choices
+                        print("there will be {} obstacles".format(obstacles))
+                        if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
+                            cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, BLACK, cell)
+                            obstacles -= 1
+                            tracking_array[i][j] = 1
+                        elif tracking_array[i][j] == 0:
+                            cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, BLACK, cell, 1)
+                    pygame.display.update()
+                    if obstacle_num == 0:
+                        self.x+=20
+            obstacle_num = 1
+
+        counter = 0  # to count the obstacles
+        for i in range(0, size):
+            for j in range(0, size):
+                if tracking_array[i][j] == 1:
+                    counter += 1
+
+        print(counter)
 
 def start():
 
     if(len(sys.argv) != 3):
-        print("Incorrect Usage: python MazeGUI.py <rows> <cols> <probability>")
+        print("Incorrect Usage: python MazeGUI.py <n> <probability>")
         sys.exit(1)
 
     # command line arguments
