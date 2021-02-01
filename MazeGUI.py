@@ -15,7 +15,11 @@ class MazeGUI:
 
     def build_maze(self, screen, size, probability):
         obstacles = (size*size)*probability # if the maze area is 100 then there should be only 10 obstacles generated
+        print("Obstacles to create {}".format(obstacles))
         obstacles_created = 0
+        track_obstacles = [] # 1 if there is an obstacle and 0 if there isn't any obstacle
+        arr = [0,1] # these will represent random choices
+
         for i in range(0,size):
             self.x = 20
             self.y += 20
@@ -27,19 +31,53 @@ class MazeGUI:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                     pygame.draw.rect(screen, GREEN, cell)
                 else:
-                    arr = [0,1] # these will represent random choices
                     if random.choice(arr) == 0 and obstacles != 0:
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell)
                         obstacles -= 1
-                        obstacles_created+=1
+                        obstacles_created += 1
                     else: 
                         cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
                         pygame.draw.rect(screen, BLACK, cell, 1) 
                 pygame.display.update()
                 self.x+=20
+
+        '''
+        Logic: 
+            loop until obstacles is 0
+            Skip the first and last cell
+            if tracking_obstacle is occupied (has a 1 in it) then skip it
+            but if tracking_obstacle is 0 then apply the inital condition from the above code to occupy a cell all until the obstacles array is done
+        '''
+
+        # reset the values of x and y for the next iteration goes smoothly
+        self.y = 0
+        self.x = 0 
+
+        while obstacles != 0:
+            for i in range(0,size):
+                self.x = 20
+                self.y += 20
+                for j in range(0,size):
+                    if i == 0 and j == 0 or i == size and j == size:
+                        continue
+                    else:
+                        if track_obstacles == 1:
+                            continue
+                        else: 
+                            if random.choice(arr) == 0:
+                                cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
+                                pygame.draw.rect(screen, BLACK, cell)
+                                obstacles -= 1
+                                obstacles_created += 1
+                                track_obstacles = 1
+                            else:
+                                cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size) 
+                                pygame.draw.rect(screen, BLACK, cell, 1)
+                    pygame.display.update()
+                    self.x+=20
         
-        print(obstacles_created)
+        print("Obstacles created {}".format(obstacles_created))
 
 def start():
 
