@@ -83,7 +83,7 @@ def dfs(maze, beginning, goal):
             child4.pop()
         current = fringe.pop()
         if current == target:
-            return visited
+            return True
         else:
             if current not in visited and maze[current[0]][current[1]]==0:
                 a=current[0]
@@ -137,7 +137,7 @@ def dfs(maze, beginning, goal):
 
 
 
-    return visited
+    return False
 def start():
 
     #if(len(sys.argv) != 3):
