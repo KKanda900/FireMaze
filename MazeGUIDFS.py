@@ -166,7 +166,7 @@ def start():
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-            running = False
+                running = False
 
         # update pygame's display to display everything
         pygame.display.update()
