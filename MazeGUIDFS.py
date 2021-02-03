@@ -85,45 +85,55 @@ def dfs(maze, beginning, goal):
         if current == target:
             return True
         else:
+            if maze[i][j]==1 or maze[int(second[0])][int(second[1])]==1:
+                return False
             if current not in visited and maze[current[0]][current[1]]==0:
                 a=current[0]
                 b=current[1]
-                if current[1] == 0 and maze[a][b+1]!=1:
+                # need to figure out a corner case (0,0) or (n,0)
+                if current[1] == 0 and maze[a][b+1]!=1 and ((a and b+1) in range(0,dim)):
                     child1.append((current[0], current[1]+1))
-                    if current[0] != dim-1 and maze[a+1][b]!=1:
+                    if current[0] != dim-1 and maze[a+1][b]!=1 and ((a+1 and b) in range(0,dim)):
                         child2.append((current[0]+1, current[1]))
-                    elif current[0] !=0 and maze[a-1][b]!=1 :
+                    elif current[0] !=0 and maze[a-1][b]!=1 and ((a-1 and b) in range(0,dim)):
                         child2.append((current[0]-1, current[1]))
                 else:
                     if (current[0] == 0 and current[1] != 0) or (current[0]==dim-1 and current[1]!=0):
                        if maze[a][b-1] !=1:
-                            child1.append((current[0], current[1]-1))
-                            if current[0] == 0 and maze[a+1][b]!=1:
-                                child2.append((current[0]+1, current[1]))
-                            elif current[0] == dim-1 and maze[a-1][b]:
-                                child2.append((current[0]-1, current[1]))
-                            if current[1] != dim-1 and maze[a][b+1]!=1:
-                                child3.append((current[0], current[1]+1))
-                            if len(child3)>0 and child3[0] not in fringe and child3[0] not in visited:
+                           if  ((a and b-1) in range(0,dim)):
+                               child1.append((current[0],current[1]-1))
+                           else:
+                               pass
+                            # touched indentation
+                       if current[0] == 0 and maze[a+1][b]!=1 and ((a+1 and b) in range(0,dim)):
+                           child2.append((current[0]+1, current[1]))
+                       elif current[0] == dim-1 and maze[a-1][b]!=1 and ((a-1 and b) in range(0,dim)):
+                           child2.append((current[0]-1, current[1]))
+                       if current[1] != dim-1 and maze[a][b+1]!=1:
+                           if ((a and b+1) in range(0,dim)):
+                               child3.append((current[0], current[1]+1))
+                           else:
+                                pass
+                       if len(child3)>0 and child3[0] not in fringe and child3[0] not in visited:
                                 fringe.append((child3[len(child3)-1]))
                     else:
                         if current[1]!=dim-1:
-                            if maze[a][b-1]!=1:
+                            if maze[a][b-1]!=1 and  ((a and b-1) in range(0,dim)):
                                 child1.append((current[0],current[1]-1))
-                            if maze[a-1][b]!=1:
+                            if maze[a-1][b]!=1 and ((a-1 and b) in range(0,dim)):
                                 child2.append((current[0]-1,current[1]))
-                            if maze[a][b+1]!=1:
+                            if maze[a][b+1]!=1 and ((a and b+1) in range(0,dim)):
                                 child3.append((current[0],current[1]+1))
-                            if maze[a+1][b]!=1:
+                            if maze[a+1][b]!=1 and ((a+1 and b) in range(0,dim)):
                                 child4.append((current[0]+1,current[1]))
                             if len(child3)>0 and child3[0] not in fringe and child3[0] not in visited:
                                 fringe.append((child3[len(child3) - 1]))
                         else:
-                            if maze[a][b-1]!=1:
+                            if maze[a][b-1]!=1 and ((a and b-1) in range(0,dim)):
                                 child1.append((current[0], current[1] - 1))
-                            if maze[a-1][b]!=1:    
+                            if maze[a-1][b]!=1 and ((a-1 and b) in range(0,dim)):    
                                 child2.append((current[0] - 1, current[1]))
-                            if maze[a+1][b]!=1:
+                            if maze[a+1][b]!=1 and ((a+1 and b) in range(0,dim)):
                                 child4.append((current[0] + 1, current[1]))
                         if len(child4)>0 and child4[0] not in fringe and child4[0] not in visited:
                             fringe.append((child4[len(child4) - 1]))

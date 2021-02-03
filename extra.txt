@@ -1,0 +1,20 @@
+# first check the up direction
+                    if check_valid_bounds(i - 1, j, arr) == True:
+                        if tracking_obstacles[i - 1][j] != 1 and visited[i][j] == False:
+                            fringe.append((i - 1, j))
+                            visited[i][j] = True
+                    # now check the down direction
+                    elif check_valid_bounds(i + 1, j, arr) == True:
+                        if tracking_obstacles[i + 1][j] != 1 and visited[i][j] == False:
+                            fringe.append((i + 1, j))
+                            visited[i][j] = True
+                    # now we can check the left direction
+                    elif check_valid_bounds(i, j - 1, arr) == True:
+                        if tracking_obstacles[i][j - 1] != 1 and visited[i][j] == False:
+                            fringe.append((i, j - 1))
+                            visited[i][j] = True
+                    # finally check the right side
+                    elif check_valid_bounds(i, j + 1, arr) == True:
+                        if tracking_obstacles[i][j + 1] != 1 and visited[i][j] == False:
+                            fringe.append((i, j + 1))
+                            visited[i][j] = True
