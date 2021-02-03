@@ -3,15 +3,17 @@ from pygame_widgets import Button
 import sys, re, random, numpy
 
 # Color Graphics used in the Maze Visualizer
-BLACK = (0, 0, 0)
-YELLOW = (255,255,0)
-GREEN = (0,255,0)
-BLUE = (0,0,255)
+BLACK = (0, 0, 0) # used to draw the cells and obstacles
+YELLOW = (255,255,0) # used to draw the start node
+GREEN = (0,255,0) # used to draw the goal node
+BLUE = (0,0,255) 
 RED = (255,0,0)
+RUST = (210,150,75)
 
 class MazeGUI:
     x, y = 0, 0
     cell_size = 20
+    tracking_obstacles = []
 
     def build_maze(self, screen, size, probability):
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
@@ -48,13 +50,30 @@ class MazeGUI:
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
                 self.x += 20
+        
+        self.tracking_obstacles = tracking_array
 
-        counter = 0  # to count the obstacles
-        for i in range(0, size):
-            for j in range(0, size):
-                if tracking_array[i][j] == 1:
-                    counter += 1
-
+    def draw_path(self, screen, size): # right now this should draw just a straight path
+        # remember to reset the values
+        self.x = 0
+        self.y = 0
+        for k in range(0, size):
+            self.x = 20
+            self.y += 20
+            for b in range(0, size):
+                # lets try drawing in a straight line from the starting node
+                if k == 0:
+                    if k == 0 and b == 0:
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                        pygame.draw.rect(screen, BLACK, cell, 1)
+                    else:
+                        cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                        pygame.draw.rect(screen, RUST, cell)
+                else: 
+                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+                pygame.display.update()
+                self.x += 20
 
 def start():
 
@@ -76,6 +95,9 @@ def start():
 
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
+    maze.draw_path(screen, dim) # just draws a straight line from start to finish
+
+    # this is to get the environment up and running
     running = True
     index = 0
     while running:
