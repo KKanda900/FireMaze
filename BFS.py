@@ -26,7 +26,6 @@ def bfs_tree_search(arr):
     # now define the start and end node which in our case is the first indicies and the last indicies respectively
     start = (0, 0)
     goal = (len(arr) - 1, len(arr) - 1)
-    print("The defined goal node is {}".format(goal))
 
     # now because we are working with bfs, we know bfs calls for a fringe in the form of a queue because of the queue's policy (FIFO)
     fringe = []
@@ -35,27 +34,26 @@ def bfs_tree_search(arr):
     # keep an array to represent the visited arrays
     visited = numpy.zeros((len(arr), len(arr)), dtype=bool)
 
+    # for this implementation of bfs we want to keep track of the parents to obtain the shortest path
+    parent = []
+
     # now iterate through the fringe to check for the path
-
-    """
-    Thoughts: 
-        1. Iterate through the nested array then inside the jth iteration conduct bfs like implemented on the bottom
-    """
-
     while len(fringe) > 0:
         current = fringe.pop(0)
-        print("Current is {}".format(current))
         visited[current[0]][current[1]] = True
         if current == goal:
+            print(parent)
+            print(visited)
             return True
         else:
             # first check the up direction
             if check_valid_bounds(-1, 0, current, arr) == True:
                 if (
                     arr[current[0] - 1][current[1]] == 0
-                    and visited[current[0] - 1][current[1]] == True
+                    and visited[current[0] - 1][current[1]] == False
                 ):
                     fringe.append((current[0] - 1, current[1]))
+                    parent.append(current)
 
             # now check the down direction
             if check_valid_bounds(1, 0, current, arr) == True:
@@ -64,6 +62,7 @@ def bfs_tree_search(arr):
                     and visited[current[0] + 1][current[1]] == False
                 ):
                     fringe.append((current[0] + 1, current[1]))
+                    parent.append(current)
 
             # now we can check the left direction
             if check_valid_bounds(0, -1, current, arr) == True:
@@ -72,6 +71,7 @@ def bfs_tree_search(arr):
                     and visited[current[0]][current[1] - 1] == False
                 ):
                     fringe.append((current[0], current[1] - 1))
+                    parent.append(current)
 
             # finally check the right side
             if check_valid_bounds(0, 1, current, arr) == True:
@@ -80,8 +80,8 @@ def bfs_tree_search(arr):
                     and visited[current[0]][current[1] + 1] == False
                 ):
                     fringe.append((current[0], current[1] + 1))
+                    parent.append(current)
 
-    print(visited)
     return False
 
 
