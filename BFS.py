@@ -78,13 +78,5 @@ def bfs_tree_search(arr):
                 ):
                     fringe.put((current[0], current[1] + 1))
             path.append(current)
-
+    
     return False
-
-
-if __name__ == "__main__":
-    arr = [[0, 1, 0], [0, 0, 0], [0, 1, 0]]
-    print(arr[0])
-    print(arr[1])
-    print(arr[2])
-    print(bfs_tree_search(arr))
