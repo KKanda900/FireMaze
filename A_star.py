@@ -3,7 +3,7 @@ import math
 import random
 
 dim = 10  # int(input("Enter a dimension"))
-prob = .2  # float(input("Enter probability"))
+prob = .3  # float(input("Enter probability"))
 
 
 def build_maze(size, probability):
@@ -35,7 +35,7 @@ def a_star(maze_array, n):
     child2 = []
     child3 = []
     child4 = []
-    start = [0, 0, math.sqrt(2*(n**2))]
+    start = [0, 0, math.sqrt(2*((n-1)**2))]
     goal = [n - 1, n - 1, 0]
     tracker = [start]
     fringe.append(start)
@@ -50,41 +50,41 @@ def a_star(maze_array, n):
         if len(child4) != 0:
             child4.pop()
         if not fringe:
-            if current[1] != 0 and maze_array[current[0]][current[1]] != 1 and current not in visited:
-                temp = [current[0], current[1] - 1]
-                child1.append([current[0], current[1] - 1, distance_calculator(temp, goal)])  # top
-                fringe = sorting(fringe, child1)
-            if current[0] != n - 1 and maze_array[current[0]][current[1]] != 1 and current not in visited:
-                temp = [current[0] + 1, current[1]]
-                child2.append([current[0] + 1, current[1], distance_calculator(temp, goal)])  # right
-                fringe = sorting(fringe, child2)
-            if current[1] != n - 1 and maze_array[current[0]][current[1]] != 1 and current not in visited:
-                temp = [current[0], current[1] + 1]
-                child3.append([current[0], current[1] + 1, distance_calculator(temp, goal)])  # bottom
-                fringe = sorting(fringe, child3)
-            if current[0] != 0 and maze_array[current[0]][current[1]] != 1 and current not in visited:
+            if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited:
                 temp = [current[0] - 1, current[1]]
-                child4.append([current[0] - 1, current[1], distance_calculator(temp, goal)])  # left
+                child1.append([current[0] - 1, current[1], distance_calculator(temp, goal)])  # top
+                fringe = sorting(fringe, child1)
+            if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited:
+                temp = [current[0], current[1] + 1]
+                child2.append([current[0], current[1] + 1, distance_calculator(temp, goal)])  # right
+                fringe = sorting(fringe, child2)
+            if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited:
+                temp = [current[0] + 1, current[1]]
+                child3.append([current[0] + 1, current[1], distance_calculator(temp, goal)])  # bottom
+                fringe = sorting(fringe, child3)
+            if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited:
+                temp = [current[0], current[1] - 1]
+                child4.append([current[0], current[1] - 1, distance_calculator(temp, goal)])  # left
                 fringe = sorting(fringe, child4)
         else:
-            if current[1] != 0 and maze_array[current[0]][current[1]] != 1 and current not in visited and current not in fringe:
-                temp = [current[0], current[1] - 1]
-                child1.append([current[0], current[1] - 1, distance_calculator(temp, goal)])  # top
+            if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited and current not in fringe:
+                temp = [current[0] - 1, current[1]]
+                child1.append([current[0] - 1, current[1], distance_calculator(temp, goal)])  # top
                 if child1[0] not in visited and child1[0] not in fringe:
                     fringe = sorting(fringe, child1)
-            if current[0] != n - 1 and maze_array[current[0]][current[1]] != 1 and current not in visited and current not in fringe:
-                temp = [current[0] + 1, current[1]]
-                child2.append([current[0] + 1, current[1], distance_calculator(temp, goal)])  # right
+            if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited and current not in fringe:
+                temp = [current[0], current[1] + 1]
+                child2.append([current[0], current[1] + 1, distance_calculator(temp, goal)])  # right
                 if child2[0] not in visited and child2[0] not in fringe:
                     fringe = sorting(fringe, child2)
-            if current[1] != n - 1 and maze_array[current[0]][current[1]] != 1 and current not in visited and current not in fringe:
-                temp = [current[0], current[1] + 1]
-                child3.append([current[0], current[1] + 1, distance_calculator(temp, goal)])  # bottom
+            if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited and current not in fringe:
+                temp = [current[0] + 1, current[1]]
+                child3.append([current[0] + 1, current[1], distance_calculator(temp, goal)])  # bottom
                 if child3[0] not in visited and child3[0] not in fringe:
                     fringe = sorting(fringe, child3)
-            if current[0] != 0 and maze_array[current[0]][current[1]] != 1 and current not in visited and current not in fringe:
-                temp = [current[0] - 1, current[1]]
-                child4.append([current[0] - 1, current[1], distance_calculator(temp, goal)])  # left
+            if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited and current not in fringe:
+                temp = [current[0], current[1] - 1]
+                child4.append([current[0], current[1] - 1, distance_calculator(temp, goal)])  # left
                 if child4[0] not in visited and child4[0] not in fringe:
                     fringe = sorting(fringe, child4)
         visited.append(current)
