@@ -17,7 +17,7 @@ BLUE = (0,0,255)
 RED = (255,0,0)
 dim = int(input("Enter a dimension (max of 40)"))
 probability = float(input("Enter probability (between 0 and 1)"))
-tracking_array = numpy.zeros((dim, dim)) 
+tracking_array = numpy.zeros((dim, dim)) # track where the obstacles are places so it doesn't double count
 class MazeGUI:
     x, y = 0, 0
     cell_size = 20
@@ -25,20 +25,19 @@ class MazeGUI:
     def build_maze(self, screen, size, probability):
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
         obstacles = int((size*size)*probability)  # if the maze area is 100 then there should be only 10 obstacles
-        #tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
+        dim_array = list(range(0, size))
         while obstacles != 0:
-            for i in range(0, size):
-                for j in range(0, size):
-                    if i == 0 and j == 0:  # this is what we will define as a start node with yellow
-
-                        pass
-                    elif i == size-1 and j == size-1:
-                        pass
-                    else:
-                        arr = [0, 1]  # these will represent random choices
-                        if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
-                            tracking_array[i][j] = 1
-                            obstacles -= 1
+            i = random.choice(dim_array)
+            j = random.choice(dim_array)
+            if i == 0 and j == 0:  # this is what we will define as a start node with yellow
+                pass
+            elif i == size - 1 and j == size - 1:
+                pass
+            else:
+                arr = [0, 1]  # these will represent random choices
+                if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
+                    tracking_array[i][j] = 1
+                    obstacles -= 1
 
         for k in range(0, size):
             self.x = 20
