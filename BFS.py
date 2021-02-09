@@ -51,7 +51,6 @@ def build_maze(size, probability):
     print(tracking_array)
     return tracking_array
 
-
 def check_valid_bounds(i, j, pop_value, arr):
     i = pop_value[0] + i
     j = pop_value[1] + j

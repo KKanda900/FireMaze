@@ -1,4 +1,4 @@
-import pygame, sys, re, random, numpy
+import pygame, sys, re, random, numpy, math
 from pygame_widgets import Button
 from collections import deque, OrderedDict
 import threading
@@ -57,6 +57,27 @@ class MazeGUI:
                 self.x += 20
 
         self.tracking_obstacles = tracking_array
+
+    def generate_fire_maze(self, screen, size, probability):
+        q = probability
+        fire_maze = self.tracking_obstacles
+        fire = 0
+        for i in range(0, len(self.tracking_obstacles)):
+            for j in range(0, len(self.tracking_obstacles)):
+                if fire_maze[i][j] != 2 and fire_maze[i][j] != 1:
+                    if fire_maze[i+1][j] == 2:
+                        fire+=1
+                    elif fire_maze[i-1][j] == 2:
+                        fire+=1
+                    elif fire_maze[i][j+1] == 2:
+                        fire+=1
+                    elif fire_maze[i][j-1] == 2:
+                        fire+=2
+                    prob = 1 - (1 - q)*fire
+                    if math.random() <= prob:
+                        fire_maze[i][j] = 2
+        
+        return fire_maze
 
     def check_valid_bounds(self, i, j, pop_value, arr):
         i = pop_value[0] + i
