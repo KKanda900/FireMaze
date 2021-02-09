@@ -67,16 +67,18 @@ class MazeGUI:
             return False
     
     def bfs_tree_search(self):
+        arr = self.tracking_obstacles
+
         # now define the start and end node which in our case is the first indicies and the last indicies respectively
         start = (0, 0)
-        goal = (len(self.tracking_obstacles) - 1, len(self.tracking_obstacles) - 1)
+        goal = (len(arr) - 1, len(arr) - 1)
 
         # now because we are working with bfs, we know bfs calls for a fringe in the form of a queue because of the queue's policy (FIFO)
         fringe = deque()
         fringe.append(start)
 
-        # keep an self.tracking_obstaclesay to represent the visited self.tracking_obstaclesays
-        visited = numpy.zeros((len(self.tracking_obstacles), len(self.tracking_obstacles)), dtype=bool)
+        # keep an array to represent the visited arrays
+        visited = numpy.zeros((len(arr), len(arr)), dtype=bool)
 
         # for this implementation of bfs we want to keep track of the parents to obtain the shortest path
         path = []
@@ -90,36 +92,51 @@ class MazeGUI:
                 path.reverse()
                 # now that we found the end node, let's perform a recursive backtracking algorithm to find the actual path
                 bfs_route = []
-                bfs_route.append(path.pop(0))
-                while bfs_route[0] != start:
-                    if len(path) == 0:
-                        break
+                while path[0] != start:
                     new_curr = path.pop(0)
-                    bfs_route.append(new_curr)
+                    if not bfs_route:
+                        bfs_route.append(new_curr)
+                    # top
+                    elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] + 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
+                        bfs_route.append(new_curr)
+                    # right
+                    elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] + 1:
+                        bfs_route.append(new_curr)
+                    # bottom
+                    elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] - 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
+                        bfs_route.append(new_curr)
+                    # left
+                    elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] - 1:
+                        bfs_route.append(new_curr)
+
                 bfs_route.append(start)
                 bfs_route.reverse()
-                #self.draw_path(list(OrderedDict.fromkeys(bfs_route)))
-                return list(OrderedDict.fromkeys(bfs_route))
+                self.draw_path(list(bfs_route))
             else:
                 # first check the up direction
-                if self.check_valid_bounds(-1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False:
+                if self.check_valid_bounds(-1, 0, current, arr) and arr[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False and (current[0] - 1, current[1]) not in fringe:
                     fringe.append((current[0] - 1, current[1]))
-                    path.append(current)
+                    if current not in path:
+                        path.append(current)
 
                 # now check the down direction
-                if self.check_valid_bounds(1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] + 1][current[1]] == 0 and visited[current[0] + 1][current[1]] == False:
+                if self.check_valid_bounds(1, 0, current, arr) and arr[current[0] + 1][current[1]] == 0 and visited[current[0] + 1][current[1]] == False and (current[0] + 1, current[1]) not in fringe:
                     fringe.append((current[0] + 1, current[1]))
-                    path.append(current)
+                    if current not in path:
+                        path.append(current)
 
                 # now we can check the left direction
-                if self.check_valid_bounds(0, -1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] - 1] == 0 and visited[current[0]][current[1] - 1] == False:
+                if self.check_valid_bounds(0, -1, current, arr) and arr[current[0]][current[1] - 1] == 0 and visited[current[0]][current[1] - 1] == False and (current[0], current[1] - 1) not in fringe:
                     fringe.append((current[0], current[1] - 1))
-                    path.append(current)
+                    if current not in path:
+                        path.append(current)
 
                 # finally check the right side
-                if self.check_valid_bounds(0, 1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] + 1] == 0 and visited[current[0]][current[1] + 1] == False:
+                if self.check_valid_bounds(0, 1, current, arr) and arr[current[0]][current[1] + 1] == 0 and visited[current[0]][current[1] + 1] == False and (current[0], current[1] + 1) not in fringe:
                     fringe.append((current[0], current[1] + 1))
-                    path.append(current)
+                    if current not in path:
+                        path.append(current)
+            
         return []
     
     def draw_path(self, arr): # arr contains the coordinates of the path to draw
