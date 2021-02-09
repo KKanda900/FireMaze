@@ -1,5 +1,4 @@
-import numpy
-import random
+import numpy, random
 from collections import deque, OrderedDict
 
 
@@ -10,6 +9,25 @@ def print_2darray(arr):
 
         print("\n")
 
+def build_maze(size, probability):
+    obstacle_num = 0  # See if the amount of obstacles required are 0 or not
+    obstacles = int((size * size) * probability)  # if the maze area is 100 then there should be only 10 obstacles
+    tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
+    dim_array = list(range(0, size))
+    while obstacles != 0:
+        i = random.choice(dim_array)
+        j = random.choice(dim_array)
+        if i == 0 and j == 0:  # this is what we will define as a start node with yellow
+            pass
+        elif i == size - 1 and j == size - 1:
+            pass
+        else:
+            arr = [0, 1]  # these will represent random choices
+            if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
+                tracking_array[i][j] = 1
+                obstacles -= 1
+    print(tracking_array)
+    return tracking_array
 
 def build_maze(size, probability):
     obstacle_num = 0  # See if the amount of obstacles required are 0 or not
@@ -71,17 +89,13 @@ def bfs_tree_search(arr):
                 new_curr = path.pop(0)
                 if not bfs_route:
                     bfs_route.append(new_curr)
-                # top
-                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] + 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
+                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] + 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:  # top
                     bfs_route.append(new_curr)
-                # right
-                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] + 1:
+                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] + 1:  # right
                     bfs_route.append(new_curr)
-                # bottom
-                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] - 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
+                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] - 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:  # bottom
                     bfs_route.append(new_curr)
-                # left
-                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] - 1:
+                elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] - 1:  # left
                     bfs_route.append(new_curr)
 
             bfs_route.append(start)
