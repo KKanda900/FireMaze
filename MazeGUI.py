@@ -1,6 +1,7 @@
 import pygame, sys, re, random, numpy
 from pygame_widgets import Button
-from collections import deque
+from collections import deque, OrderedDict
+import threading
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -57,12 +58,6 @@ class MazeGUI:
 
         self.tracking_obstacles = tracking_array
 
-        counter = 0  # to count the obstacles
-        for i in range(0, size):
-            for j in range(0, size):
-                if tracking_array[i][j] == 1:
-                    counter += 1
-
     def check_valid_bounds(self, i, j, pop_value, arr):
         i = pop_value[0] + i
         j = pop_value[1] + j
@@ -80,8 +75,6 @@ class MazeGUI:
         fringe = deque()
         fringe.append(start)
 
-        print(self.tracking_obstacles)
-
         # keep an self.tracking_obstaclesay to represent the visited self.tracking_obstaclesays
         visited = numpy.zeros((len(self.tracking_obstacles), len(self.tracking_obstacles)), dtype=bool)
 
@@ -91,47 +84,40 @@ class MazeGUI:
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
             current = fringe.popleft()
-            print(current)
             visited[current[0]][current[1]] = True
             if current == goal:
                 path.append(current)
                 path.reverse()
                 # now that we found the end node, let's perform a recursive backtracking algorithm to find the actual path
                 bfs_route = []
-                while path[0] != start:
+                bfs_route.append(path.pop(0))
+                while bfs_route[0] != start:
+                    if len(path) == 0:
+                        break
                     new_curr = path.pop(0)
-                    if new_curr[1] == path[0][1] + 1 and new_curr[0] == path[0][0]:  # top
-                        bfs_route.append(new_curr)
-                    elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] + 1:  # right
-                        bfs_route.append(new_curr)
-                    elif new_curr[1] == path[0][1] - 1 and new_curr[0] == path[0][0]:  # bottom
-                        bfs_route.append(new_curr)
-                    elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] - 1:  # left
-                        bfs_route.append(new_curr)
-                    else:
-                        pass
+                    bfs_route.append(new_curr)
                 bfs_route.append(start)
                 bfs_route.reverse()
-                self.draw_path(list(bfs_route))
-                return list(bfs_route)
+                #self.draw_path(list(OrderedDict.fromkeys(bfs_route)))
+                return list(OrderedDict.fromkeys(bfs_route))
             else:
                 # first check the up direction
-                if check_valid_bounds(-1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False:
+                if self.check_valid_bounds(-1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False:
                     fringe.append((current[0] - 1, current[1]))
                     path.append(current)
 
                 # now check the down direction
-                if check_valid_bounds(1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] + 1][current[1]] == 0 and visited[current[0] + 1][current[1]] == False:
+                if self.check_valid_bounds(1, 0, current, self.tracking_obstacles) and self.tracking_obstacles[current[0] + 1][current[1]] == 0 and visited[current[0] + 1][current[1]] == False:
                     fringe.append((current[0] + 1, current[1]))
                     path.append(current)
 
                 # now we can check the left direction
-                if check_valid_bounds(0, -1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] - 1] == 0 and visited[current[0]][current[1] - 1] == False:
+                if self.check_valid_bounds(0, -1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] - 1] == 0 and visited[current[0]][current[1] - 1] == False:
                     fringe.append((current[0], current[1] - 1))
                     path.append(current)
 
                 # finally check the right side
-                if check_valid_bounds(0, 1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] + 1] == 0 and visited[current[0]][current[1] + 1] == False:
+                if self.check_valid_bounds(0, 1, current, self.tracking_obstacles) and self.tracking_obstacles[current[0]][current[1] + 1] == 0 and visited[current[0]][current[1] + 1] == False:
                     fringe.append((current[0], current[1] + 1))
                     path.append(current)
         return []
@@ -142,25 +128,37 @@ class MazeGUI:
         screen = self.display
         size = self.dim
         tracking_array = self.tracking_obstacles
+        curr = None
+        
+        for i in range(0, len(tracking_array)):
+            for j in range(0, len(tracking_array)):
+                if len(arr) > 0:
+                    curr = arr.pop(0)
+                tracking_array[curr[0]][curr[1]] = 2
+        
         for k in range(0, size):
             self.x = 20
             self.y += 20
             for b in range(0, size):
-                curr = arr.pop()
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
                 elif k == size-1 and b == size-1:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
                 elif tracking_array[k][b] == 1:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
-                elif k == curr[0] and b == curr[1]:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLUE, cell)
+                elif tracking_array[k][b] == 2:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, RED, cell)
                 else:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
                 self.x += 20
@@ -186,6 +184,7 @@ def start():
 
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
+    print(maze.bfs_tree_search())
     
     running = True
     index = 0

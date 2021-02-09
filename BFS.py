@@ -46,44 +46,46 @@ def bfs_tree_search(arr):
             bfs_route = []
             while path[0] != start:
                 new_curr = path.pop(0)
-                if new_curr[1] == path[0][1] + 1 and new_curr[0] == path[0][0]:  # top
+                if new_curr[1] == path[0][1] + 1 and new_curr[0] == path[0][0] and visited[new_curr[0]][new_curr[1]+1] == True:  # top
                     bfs_route.append(new_curr)
-                elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] + 1:  # right
+                elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] + 1 and visited[new_curr[0]+1][new_curr[1]] and True:  # right
                     bfs_route.append(new_curr)
-                elif new_curr[1] == path[0][1] - 1 and new_curr[0] == path[0][0]:  # bottom
+                elif new_curr[1] == path[0][1] - 1 and new_curr[0] == path[0][0] and visited[new_curr[0]][new_curr[1]-1] == True:  # bottom
                     bfs_route.append(new_curr)
-                elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] - 1:  # left
+                elif new_curr[1] == path[0][1] and new_curr[0] == path[0][0] - 1 and visited[new_curr[0]-1][new_curr[1]] == True:  # left
                     bfs_route.append(new_curr)
-                else:
-                    pass
+                #bfs_route.append(new_curr)
             bfs_route.append(start)
             bfs_route.reverse()
-            return list(bfs_route)
+            printList(list(bfs_route))
+            return list(OrderedDict.fromkeys(bfs_route))
         else:
             # first check the up direction
             if check_valid_bounds(-1, 0, current, arr) and arr[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False:
                 fringe.append((current[0] - 1, current[1]))
-                path.append(current)
 
             # now check the down direction
             if check_valid_bounds(1, 0, current, arr) and arr[current[0] + 1][current[1]] == 0 and visited[current[0] + 1][current[1]] == False:
                 fringe.append((current[0] + 1, current[1]))
-                path.append(current)
 
             # now we can check the left direction
             if check_valid_bounds(0, -1, current, arr) and arr[current[0]][current[1] - 1] == 0 and visited[current[0]][current[1] - 1] == False:
                 fringe.append((current[0], current[1] - 1))
-                path.append(current)
 
             # finally check the right side
             if check_valid_bounds(0, 1, current, arr) and arr[current[0]][current[1] + 1] == 0 and visited[current[0]][current[1] + 1] == False:
                 fringe.append((current[0], current[1] + 1))
-                path.append(current)
+
+            path.append(current)
     return []
+
+def printList(bfs_route):
+    for i in range(0, len(bfs_route)):
+        print(bfs_route.pop(0))
 
 
 if __name__ == "__main__":
-    arr = [[0, 1, 0, 1], [0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+    arr = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 1, 0, 0]]
     print(arr[0])
     print(arr[1])
     print(arr[2])
