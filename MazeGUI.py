@@ -13,9 +13,10 @@ RED = (255,0,0)
 class MazeGUI:
     x, y = 0, 0
     cell_size = 20
-    dim = 0
+    dim = 10
     tracking_obstacles = []
     display = None
+    fire_array = numpy.zeros((dim, dim))
 
     def build_maze(self, screen, size, probability):
         self.dim = size
@@ -58,26 +59,71 @@ class MazeGUI:
 
         self.tracking_obstacles = tracking_array
 
-    def generate_fire_maze(self, screen, size, probability):
+    def generate_fire_maze(self, probability, bln):
         q = probability
         fire_maze = self.tracking_obstacles
         fire = 0
-        for i in range(0, len(self.tracking_obstacles)):
-            for j in range(0, len(self.tracking_obstacles)):
-                if fire_maze[i][j] != 2 and fire_maze[i][j] != 1:
-                    if fire_maze[i+1][j] == 2:
-                        fire+=1
-                    elif fire_maze[i-1][j] == 2:
-                        fire+=1
-                    elif fire_maze[i][j+1] == 2:
-                        fire+=1
-                    elif fire_maze[i][j-1] == 2:
-                        fire+=2
-                    prob = 1 - (1 - q)*fire
-                    if math.random() <= prob:
-                        fire_maze[i][j] = 2
-        
-        return fire_maze
+        fire_array = self.fire_array
+        fire_array_copy = fire_array
+
+        while bln:  # for the first one does a random fire
+            y = random.randint(0, len(fire_maze) - 1)
+            x = random.randint(0, len(fire_maze) - 1)
+            if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
+                fire_array[x][y] = 2
+                break
+
+        for i in range(0, len(self.tracking_obstacles) - 1):
+            for j in range(0, len(self.tracking_obstacles) - 1):
+                fire = 0
+                if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
+                    if fire_array_copy[i+1][j] == 2:
+                        fire += 1
+                    if fire_array_copy[i-1][j] == 2 and i != 0:
+                        fire += 1
+                    if fire_array_copy[i][j+1] == 2:
+                        fire += 1
+                    if fire_array_copy[i][j-1] == 2 and j != 0:
+                        fire += 1
+                    prob = 1 - ((1 - q)**fire)
+                    if fire > 0 and random.random() <= prob:
+                        fire_array[i][j] = 2
+
+
+        print(fire_array)
+
+        self.x = 0
+        self.y = 0
+        screen = self.display
+        size = self.dim
+        tracking_array = self.tracking_obstacles
+
+        for k in range(0, size):
+            self.x = 20
+            self.y += 20
+            for b in range(0, size):
+                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, YELLOW, cell)
+                elif k == size-1 and b == size-1:  # goal node
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, GREEN, cell)
+                elif tracking_array[k][b] == 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell)
+                elif fire_array[k][b] == 2:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLUE, cell)
+                else:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+                pygame.display.update()
+                self.x += 20
 
     def check_valid_bounds(self, i, j, pop_value, arr):
         i = pop_value[0] + i
@@ -173,7 +219,7 @@ class MazeGUI:
                 if len(arr) > 0:
                     curr = arr.pop(0)
                 tracking_array[curr[0]][curr[1]] = 2
-        
+
         for k in range(0, size):
             self.x = 20
             self.y += 20
@@ -204,18 +250,18 @@ class MazeGUI:
 
 def start():
 
-    if(len(sys.argv) != 3):
-        print("Incorrect Usage: python MazeGUI.py <dim> <probability>")
-        sys.exit(1)
+    #if(len(sys.argv) != 3):
+     #   print("Incorrect Usage: python MazeGUI.py <dim> <probability>")
+      #  sys.exit(1)
 
     # command line arguments
-    dim = int(sys.argv[1])
-    probability = float(sys.argv[2])
+    dim = 10# int(sys.argv[1])
+    probability = .1 # float(sys.argv[2])
 
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((500, 500))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
@@ -223,7 +269,12 @@ def start():
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
     print(maze.bfs_tree_search())
-    
+
+    for t in range(0, 20):
+        if t != 0:
+            maze.generate_fire_maze(.1, False)
+        else:
+            maze.generate_fire_maze(.1, True)
     running = True
     index = 0
     while running:
