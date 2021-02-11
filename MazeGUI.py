@@ -66,28 +66,29 @@ class MazeGUI:
         fire_array = self.fire_array
         fire_array_copy = fire_array
 
-        while bln:  # for the first one does a random fire
-            y = random.randint(0, len(fire_maze) - 1)
-            x = random.randint(0, len(fire_maze) - 1)
-            if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
-                fire_array[x][y] = 2
-                break
-
-        for i in range(0, len(self.tracking_obstacles) - 1):
-            for j in range(0, len(self.tracking_obstacles) - 1):
-                fire = 0
-                if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
-                    if fire_array_copy[i+1][j] == 2:
-                        fire += 1
-                    if fire_array_copy[i-1][j] == 2 and i != 0:
-                        fire += 1
-                    if fire_array_copy[i][j+1] == 2:
-                        fire += 1
-                    if fire_array_copy[i][j-1] == 2 and j != 0:
-                        fire += 1
-                    prob = 1 - ((1 - q)**fire)
-                    if fire > 0 and random.random() <= prob:
-                        fire_array[i][j] = 2
+        if bln:
+            while bln:  # for the first one does a random fire
+                y = random.randint(0, len(fire_maze) - 1)
+                x = random.randint(0, len(fire_maze) - 1)
+                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
+                    fire_array[x][y] = 2
+                    break
+        else:
+            for i in range(0, len(self.tracking_obstacles) - 1):
+                for j in range(0, len(self.tracking_obstacles) - 1):
+                    fire = 0
+                    if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
+                        if fire_array_copy[i+1][j] == 2:
+                            fire += 1
+                        if fire_array_copy[i-1][j] == 2 and i != 0:
+                            fire += 1
+                        if fire_array_copy[i][j+1] == 2:
+                            fire += 1
+                        if fire_array_copy[i][j-1] == 2 and j != 0:
+                            fire += 1
+                        prob = 1 - ((1 - q)**fire)
+                        if fire > 0 and random.random() <= prob and prob > 0:
+                            fire_array[i][j] = 2
 
 
         print(fire_array)
@@ -287,6 +288,12 @@ def start():
     maze.build_maze(screen, dim, probability)
     maze.bfs_tree_search()
 
+    for t in range(0, 20):
+        if t != 0:
+            maze.generate_fire_maze(.1, False)
+        else:
+            maze.generate_fire_maze(.1, True)
+        time.sleep(1.5)
     running = True
     index = 0
     while running:
