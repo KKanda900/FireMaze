@@ -1,7 +1,7 @@
 import pygame, sys, re, random, numpy, math
 from pygame_widgets import Button
 from collections import deque, OrderedDict
-import threading
+import threading, time
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -166,19 +166,34 @@ class MazeGUI:
                     # top
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] + 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
                         bfs_route.append(new_curr)
+                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
+                        y.start()
+                        y.join()
                     # right
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] + 1:
                         bfs_route.append(new_curr)
+                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
+                        y.start()
+                        y.join()
                     # bottom
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] - 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
                         bfs_route.append(new_curr)
+                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
+                        y.start()
+                        y.join()
                     # left
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] - 1:
                         bfs_route.append(new_curr)
+                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
+                        y.start()
+                        y.join()
 
                 bfs_route.append(start)
                 bfs_route.reverse()
-                self.draw_path(list(bfs_route))
+                y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
+                y.start()
+                y.join()
+
             else:
                 # first check the up direction
                 if self.check_valid_bounds(-1, 0, current, arr) and arr[current[0] - 1][current[1]] == 0 and visited[current[0] - 1][current[1]] == False and (current[0] - 1, current[1]) not in fringe:
@@ -219,33 +234,35 @@ class MazeGUI:
                 if len(arr) > 0:
                     curr = arr.pop(0)
                 tracking_array[curr[0]][curr[1]] = 2
-
-        for k in range(0, size):
-            self.x = 20
-            self.y += 20
-            for b in range(0, size):
-                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size-1 and b == size-1:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell)
-                elif tracking_array[k][b] == 2:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, RED, cell)
-                else:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 20
+                self.x = 0 
+                self.y = 0
+                for k in range(0, size):
+                    self.x = 20
+                    self.y += 20
+                    for b in range(0, size):
+                        if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                            cell = pygame.Rect(
+                                self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, YELLOW, cell)
+                        elif k == size-1 and b == size-1:
+                            cell = pygame.Rect(
+                                self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, GREEN, cell)
+                        elif tracking_array[k][b] == 1:
+                            cell = pygame.Rect(
+                                self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, BLACK, cell)
+                        elif tracking_array[k][b] == 2:
+                            cell = pygame.Rect(
+                                self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, RED, cell)
+                        else:
+                            cell = pygame.Rect(
+                                self.x, self.y, self.cell_size, self.cell_size)
+                            pygame.draw.rect(screen, BLACK, cell, 1)
+                        pygame.display.update()
+                        self.x += 20
+                        # time.sleep(0.1)
 
 
 def start():
@@ -268,13 +285,8 @@ def start():
 
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
-    print(maze.bfs_tree_search())
+    maze.bfs_tree_search()
 
-    for t in range(0, 20):
-        if t != 0:
-            maze.generate_fire_maze(.1, False)
-        else:
-            maze.generate_fire_maze(.1, True)
     running = True
     index = 0
     while running:
@@ -283,6 +295,11 @@ def start():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
+        """ t = 0
+        if t != 0:
+            maze.generate_fire_maze(0.1, False)
+        else:
+            maze.generate_fire_maze(0.1, True) """
 
         # update pygame's display to display everything
         pygame.display.update()

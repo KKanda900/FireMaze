@@ -131,7 +131,7 @@ def a_star(maze_array, n):
 def distance_calculator(start, end):
     x_diff = start[0] - end[0]
     y_diff = start[1] - end[1]
-    return math.sqrt((x_diff**2) + (y_diff**2))
+    return ((x_diff**2) + (y_diff**2))
 
 
 def sorting(fringe, child):
