@@ -9,6 +9,10 @@ from collections import deque, OrderedDict
 import threading
 import time
 
+'''
+Use this for ONLY TESTING PURPOSES and delete it at the end
+'''
+
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
 YELLOW = (255, 255, 0)

@@ -1,5 +1,5 @@
 import pygame, sys, re, random, numpy, math
-from pygame_widgets import Button
+from pygame_widgets import Button, TextBox
 from collections import deque, OrderedDict
 import threading, time
 
@@ -9,6 +9,20 @@ YELLOW = (255,255,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
 RED = (255,0,0)
+
+class Node:
+    position = ()
+    children = []
+    g = 0
+    h = 0
+    f = 0
+
+    def __init__(self, position):
+        self.position = position
+        children = []
+        g = 0
+        h = 0
+        f = 0
 
 class MazeGUI:
     x, y = 0, 0
@@ -167,33 +181,20 @@ class MazeGUI:
                     # top
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] + 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
                         bfs_route.append(new_curr)
-                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
-                        y.start()
-                        y.join()
                     # right
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] + 1:
                         bfs_route.append(new_curr)
-                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
-                        y.start()
-                        y.join()
                     # bottom
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] - 1 and new_curr[0] == bfs_route[len(bfs_route) - 1][0]:
                         bfs_route.append(new_curr)
-                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
-                        y.start()
-                        y.join()
                     # left
                     elif new_curr[1] == bfs_route[len(bfs_route) - 1][1] and new_curr[0] == bfs_route[len(bfs_route) - 1][0] - 1:
                         bfs_route.append(new_curr)
-                        y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
-                        y.start()
-                        y.join()
 
                 bfs_route.append(start)
                 bfs_route.reverse()
-                y = threading.Thread(target=self.draw_path, args=(list(bfs_route), ))
-                y.start()
-                y.join()
+                self.draw_path(bfs_route)
+                return bfs_route
 
             else:
                 # first check the up direction
@@ -220,6 +221,106 @@ class MazeGUI:
                     if current not in path:
                         path.append(current)
             
+        return []
+
+    def astar_check_valid_bounds(self, i, j, pop_value, arr):
+        i = pop_value.position[0] + i
+        j = pop_value.position[1] + j
+        if i >= 0 and i < len(arr) and j >= 0 and j < len(arr):
+            return True
+        else:
+            return False
+
+    def distance_calculator(self, start, end):
+        x_diff = start[0] - end[0]
+        y_diff = start[1] - end[1]
+        return math.sqrt((x_diff**2) + (y_diff**2))
+
+    def a_star(self):
+        arr = self.tracking_obstacles
+        start = (0, 0)
+        end = (len(arr)-1, len(arr)-1)
+        endNode = Node((len(arr)-1, len(arr)-1))
+        visited = numpy.zeros((len(arr), len(arr)), dtype=bool)
+
+        openset = []
+        closedset = []
+        parent = []
+
+        openset.append(Node(start))
+
+        while len(openset) > 0:
+            currentNode = openset.pop(0)
+            visited[currentNode.position[0]][currentNode.position[1]] = True
+            closedset.append(currentNode)
+
+            for nodes in openset:
+                if nodes.f < currentNode.f:
+                    currentNode = nodes
+
+            if currentNode.position == end:
+                """ for paths in parent:
+                    print(paths.position) """
+                parent.append(currentNode.position)
+                parent.reverse()
+                a_star_route = []
+                while parent[0] != start:
+                    new_curr = parent.pop(0)
+                    if not a_star_route:
+                        a_star_route.append(new_curr)
+                    # top
+                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] + 1 and new_curr[0] == a_star_route[len(a_star_route) - 1][0]:
+                        a_star_route.append(new_curr)
+                    # right
+                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] and new_curr[0] == a_star_route[len(a_star_route) - 1][0] + 1:
+                        a_star_route.append(new_curr)
+                    # bottom
+                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] - 1 and new_curr[0] == a_star_route[len(a_star_route) - 1][0]:
+                        a_star_route.append(new_curr)
+                    # left
+                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] and new_curr[0] == a_star_route[len(a_star_route) - 1][0] - 1:
+                        a_star_route.append(new_curr)
+
+                a_star_route.append(start)
+                a_star_route.reverse()
+                self.draw_path(a_star_route)
+                return a_star_route
+
+            if self.astar_check_valid_bounds(1, 0, currentNode, arr) and visited[currentNode.position[0]+1][currentNode.position[1]] == False and arr[currentNode.position[0]+1][currentNode.position[1]] != 1 and Node((currentNode.position[0]+1, currentNode.position[1])) not in openset:
+                temp = Node(
+                    (currentNode.position[0]+1, currentNode.position[1]))
+                currentNode.children.append(temp)
+
+            if self.astar_check_valid_bounds(-1, 0, currentNode, arr) and visited[currentNode.position[0]-1][currentNode.position[1]] == False and arr[currentNode.position[0]-1][currentNode.position[1]] != 1 and Node((currentNode.position[0]-1, currentNode.position[1])) not in openset:
+                temp = Node(
+                    (currentNode.position[0]-1, currentNode.position[1]))
+                currentNode.children.append(temp)
+
+            if self.astar_check_valid_bounds(0, 1, currentNode, arr) and visited[currentNode.position[0]][currentNode.position[1]+1] == False and arr[currentNode.position[0]][currentNode.position[1]+1] != 1 and Node((currentNode.position[0], currentNode.position[1]+1)) not in openset:
+                temp = Node(
+                    (currentNode.position[0], currentNode.position[1]+1))
+                currentNode.children.append(temp)
+
+            if self.astar_check_valid_bounds(0, -1, currentNode, arr) and visited[currentNode.position[0]][currentNode.position[1]-1] and arr[currentNode.position[0]][currentNode.position[1]-1] != 1 and Node((currentNode.position[0], currentNode.position[1]-1)) not in openset:
+                temp = Node(
+                    (currentNode.position[0], currentNode.position[1]-1))
+                currentNode.children.append(temp)
+
+            for child in currentNode.children:
+                if child in closedset:
+                    continue
+
+                child.g = currentNode.g + 1
+                child.h = self.distance_calculator(
+                    child.position, endNode.position)
+                child.f = child.g + child.h
+
+                if child in openset and child.g > (currentNode.g + self.distance_calculator(currentNode.position, child.position)):
+                    continue
+                openset.append(child)
+                if currentNode not in parent:
+                    parent.append(currentNode.position)
+
         return []
     
     def draw_path(self, arr): # arr contains the coordinates of the path to draw
@@ -265,35 +366,43 @@ class MazeGUI:
                         self.x += 20
                         # time.sleep(0.1)
 
-
 def start():
 
-    #if(len(sys.argv) != 3):
-     #   print("Incorrect Usage: python MazeGUI.py <dim> <probability>")
-      #  sys.exit(1)
+    if(len(sys.argv) != 4):
+        print("Incorrect Usage: python MazeGUI.py <dim> <probability> <algorithm>")
+        sys.exit(1)
 
     # command line arguments
-    dim = 10# int(sys.argv[1])
-    probability = .1 # float(sys.argv[2])
+    dim = int(sys.argv[1])
+    probability = float(sys.argv[2])
 
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((500, 500))
+    screen = pygame.display.set_mode((1000, 500))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
+    font = pygame.font.SysFont('Comic Sans MS', 30)
 
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
-    maze.bfs_tree_search()
+    
+    if sys.argv[3] == 'bfs':
+        bfs = maze.bfs_tree_search()
+    elif sys.argv[3] == 'a_star':
+        a_star = maze.a_star()
+    else:
+        print("Incorrect algorithm inputted")
+        exit(1)
 
-    for t in range(0, 20):
+    """ for t in range(0, 20):
         if t != 0:
             maze.generate_fire_maze(.1, False)
         else:
             maze.generate_fire_maze(.1, True)
-        time.sleep(1.5)
+        time.sleep(1.5) """
+
     running = True
     index = 0
     while running:
@@ -302,11 +411,6 @@ def start():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
-        """ t = 0
-        if t != 0:
-            maze.generate_fire_maze(0.1, False)
-        else:
-            maze.generate_fire_maze(0.1, True) """
 
         # update pygame's display to display everything
         pygame.display.update()
