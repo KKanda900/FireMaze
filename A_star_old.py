@@ -217,50 +217,50 @@ class MazeGUI:
             if not fringe:
                 if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited:
                     child1.append([current[0] - 1, current[1]])  # top
-                    if child1[0] not in visited and cost[current[0] - 1][[current[1]]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
+                    if child1[0] not in visited and cost[current[0] - 1][[current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
                         cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child1, cost)
                         parent[current[0] - 1][[current[1]]] = 3
                 if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited:
                     child2.append([current[0], current[1] + 1])  # right
-                    if child2[0] not in visited and cost[current[0]][[current[1] + 1]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] + 1]] == 0:
+                    if child2[0] not in visited and cost[current[0]][[current[1] + 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] + 1]] == 0:
                         cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child2, cost)
                         parent[current[0]][[current[1] + 1]] = 2
                 if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited:
                     child3.append([current[0] + 1, current[1]])  # bottom
-                    if child3[0] not in visited and cost[current[0] + 1][[current[1]]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0] + 1][[current[1]]] == 0:
+                    if child3[0] not in visited and cost[current[0] + 1][[current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] + 1][[current[1]]] == 0:
                         cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child3, cost)
                         parent[current[0] + 1][[current[1]]] = 1
                 if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited:
                     child4.append([current[0], current[1] - 1])  # left
-                    if child4[0] not in visited and cost[current[0]][[current[1] - 1]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] - 1]] == 0:
+                    if child4[0] not in visited and cost[current[0]][[current[1] - 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] - 1]] == 0:
                         cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child4, cost)
                         parent[current[0]][[current[1] - 1]] = 4
             else:
                 if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited and current not in fringe:
                     child1.append([current[0] - 1, current[1]])  # top
-                    if child1[0] not in visited and child1[0] not in fringe and cost[current[0] - 1][[current[1]]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
+                    if child1[0] not in visited and child1[0] not in fringe and cost[current[0] - 1][[current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
                         cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child1, cost)
                         parent[current[0] - 1][[current[1]]] = 3
                 if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited and current not in fringe:
                     child2.append([current[0], current[1] + 1])  # right
-                    if child2[0] not in visited and child2[0] not in fringe and cost[current[0]][[current[1] + 1]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] + 1]] == 0:
+                    if child2[0] not in visited and child2[0] not in fringe and cost[current[0]][[current[1] + 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] + 1]] == 0:
                         cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child2, cost)
                         parent[current[0]][[current[1] + 1]] = 2
                 if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited and current not in fringe:
                     child3.append([current[0] + 1, current[1]])  # bottom
-                    if child3[0] not in visited and child3[0] not in fringe and cost[current[0] + 1][[current[1]]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0] + 1][[current[1]]] == 0:
+                    if child3[0] not in visited and child3[0] not in fringe and cost[current[0] + 1][[current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] + 1][[current[1]]] == 0:
                         cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child3, cost)
                         parent[current[0] + 1][[current[1]]] = 1
                 if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited and current not in fringe:
                     child4.append([current[0], current[1] - 1])  # left
-                    if child4[0] not in visited and child4[0] not in fringe and cost[current[0]][[current[1] - 1]] <= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] - 1]] == 0:
+                    if child4[0] not in visited and child4[0] not in fringe and cost[current[0]][[current[1] - 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][[current[1] - 1]] == 0:
                         cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
                         fringe = self.sorting(fringe, child4, cost)
                         parent[current[0]][[current[1] - 1]] = 4
@@ -318,7 +318,7 @@ class MazeGUI:
 
         for i in range(0, len(fringe)):
             curr_child_dist = self.distance_calculator(fringe[i])
-            if child_dist + cost[fringe[i][0]][fringe[i][1]] < curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and child[0] not in return_array:
+            if child_dist + cost[child[0][0]][child[0][1]] <= curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and child[0] not in return_array:
                 return_array.append(child[0])
                 return_array.append(fringe[i])
                 i += 2
@@ -334,13 +334,13 @@ class MazeGUI:
 def start():
 
     # command line arguments
-    dim = 15
+    dim = 30
     probability = .2
 
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((600, 600))
+    screen = pygame.display.set_mode((700, 700))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
