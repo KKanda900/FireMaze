@@ -2,7 +2,7 @@ import numpy
 import math
 import random
 
-dim = 20  # int(input("Enter a dimension"))
+dim = 40  # int(input("Enter a dimension"))
 prob = 0.1# float(input("Enter probability"))
 
 
@@ -115,7 +115,7 @@ def a_star(maze_array, n):
                         temp_array.append(current)
                         break
                     else:
-                        temp_array.append(tracker[i])
+                        temp_array.append(current)
 
                 tracker.clear()
                 for i in range(0, len(temp_array)):  # updating tracker array
@@ -156,4 +156,4 @@ def sorting(fringe, child):
     return return_array
 
 
-a_star(build_maze(dim, prob), dim)
+a_star(build_maze(2000, prob), dim)

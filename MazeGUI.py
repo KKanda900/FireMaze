@@ -1,7 +1,6 @@
-import pygame, sys, re, random, numpy, math
+import pygame, sys, re, random, numpy, math, threading, time
 from pygame_widgets import Button, TextBox
 from collections import deque, OrderedDict
-import threading, time
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -31,6 +30,7 @@ class MazeGUI:
     tracking_obstacles = []
     display = None
     fire_array = numpy.zeros((dim, dim))
+    fire_index = 0
 
     def build_maze(self, screen, size, probability):
         self.dim = size
@@ -72,21 +72,22 @@ class MazeGUI:
                 self.x += 20
 
         self.tracking_obstacles = tracking_array
+        return self.tracking_obstacles
 
-    def generate_fire_maze(self, probability, bln):
+    def generate_fire_maze(self, probability):
         q = probability
         fire_maze = self.tracking_obstacles
         fire = 0
         fire_array = self.fire_array
         fire_array_copy = fire_array
+        fire_index = self.fire_index
 
-        if bln:
-            while bln:  # for the first one does a random fire
-                y = random.randint(0, len(fire_maze) - 1)
-                x = random.randint(0, len(fire_maze) - 1)
-                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
-                    fire_array[x][y] = 2
-                    break
+        if fire_index == 0:
+            x = random.randint(0, len(fire_maze) - 1)
+            y = random.randint(0, len(fire_maze) - 1)
+            if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
+                fire_array[x][y] = 2
+            fire_index += 1
         else:
             for i in range(0, len(self.tracking_obstacles) - 1):
                 for j in range(0, len(self.tracking_obstacles) - 1):
@@ -104,6 +105,7 @@ class MazeGUI:
                         if fire > 0 and random.random() <= prob and prob > 0:
                             fire_array[i][j] = 2
 
+        self.fire_index = fire_index
 
         print(fire_array)
 
@@ -283,7 +285,7 @@ class MazeGUI:
 
                 a_star_route.append(start)
                 a_star_route.reverse()
-                self.draw_path(a_star_route)
+                #self.draw_path(a_star_route)
                 return a_star_route
 
             if self.astar_check_valid_bounds(1, 0, currentNode, arr) and visited[currentNode.position[0]+1][currentNode.position[1]] == False and arr[currentNode.position[0]+1][currentNode.position[1]] != 1 and Node((currentNode.position[0]+1, currentNode.position[1])) not in openset:
@@ -336,35 +338,33 @@ class MazeGUI:
                 if len(arr) > 0:
                     curr = arr.pop(0)
                 tracking_array[curr[0]][curr[1]] = 2
-                self.x = 0 
-                self.y = 0
-                for k in range(0, size):
-                    self.x = 20
-                    self.y += 20
-                    for b in range(0, size):
-                        if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, YELLOW, cell)
-                        elif k == size-1 and b == size-1:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, GREEN, cell)
-                        elif tracking_array[k][b] == 1:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, BLACK, cell)
-                        elif tracking_array[k][b] == 2:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, RED, cell)
-                        else:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, BLACK, cell, 1)
-                        pygame.display.update()
-                        self.x += 20
-                        # time.sleep(0.1)
+                
+        for k in range(0, size):
+            self.x = 20
+            self.y += 20
+            for b in range(0, size):
+                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, YELLOW, cell)
+                elif k == size - 1 and b == size - 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, GREEN, cell)
+                elif tracking_array[k][b] == 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell)
+                elif tracking_array[k][b] == 2:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, RED, cell)
+                else:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+                pygame.display.update()
+                self.x += 20
 
 def start():
 
@@ -379,29 +379,33 @@ def start():
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 500))
+    screen = pygame.display.set_mode((1000, 1000))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont('Comic Sans MS', 30)
 
     maze = MazeGUI()
-    maze.build_maze(screen, dim, probability)
+    print(maze.build_maze(screen, dim, probability))
+
+    bfs = [] 
+    a_star = []
     
     if sys.argv[3] == 'bfs':
         bfs = maze.bfs_tree_search()
+        print(bfs)
     elif sys.argv[3] == 'a_star':
         a_star = maze.a_star()
+        print(a_star)
+        maze.draw_path(a_star)
     else:
         print("Incorrect algorithm inputted")
         exit(1)
 
-    """ for t in range(0, 20):
-        if t != 0:
-            maze.generate_fire_maze(.1, False)
-        else:
-            maze.generate_fire_maze(.1, True)
-        time.sleep(1.5) """
+    print("EXITED OUT OF IF-ELSE BLOCK")
+    for t in range(0, 20):
+        maze.generate_fire_maze(.1)
+        time.sleep(1.5)
 
     running = True
     index = 0

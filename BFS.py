@@ -128,5 +128,5 @@ def bfs_tree_search(arr):
 
 
 if __name__ == "__main__":
-    arr = build_maze(7, .4)
+    arr = build_maze(200, .1)
     print(bfs_tree_search(arr))

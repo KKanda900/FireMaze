@@ -68,8 +68,8 @@ def a_star(arr):
     openset.append(Node(start))
 
     while len(openset) > 0:
+        print(len(openset))
         currentNode = openset.pop(0)
-        visited[currentNode.position[0]][currentNode.position[1]] = True
         closedset.append(currentNode)
 
         for nodes in openset:
@@ -77,6 +77,7 @@ def a_star(arr):
                 currentNode = nodes
             
         if currentNode.position == end:
+            print(len(openset))
             """ for paths in parent:
                 print(paths.position) """
             parent.append(currentNode.position)
@@ -104,19 +105,19 @@ def a_star(arr):
             print(a_star_route)
             return True
         
-        if check_valid_bounds(1, 0, currentNode, arr) and visited[currentNode.position[0]+1][currentNode.position[1]] == False and arr[currentNode.position[0]+1][currentNode.position[1]] != 1 and Node((currentNode.position[0]+1, currentNode.position[1])) not in openset:
+        if check_valid_bounds(1, 0, currentNode, arr) and arr[currentNode.position[0]+1][currentNode.position[1]] != 1 and Node((currentNode.position[0]+1, currentNode.position[1])) not in openset:
             temp = Node((currentNode.position[0]+1, currentNode.position[1]))
             currentNode.children.append(temp)
 
-        if check_valid_bounds(-1, 0, currentNode, arr) and visited[currentNode.position[0]-1][currentNode.position[1]] == False and arr[currentNode.position[0]-1][currentNode.position[1]] != 1 and Node((currentNode.position[0]-1, currentNode.position[1])) not in openset:
+        if check_valid_bounds(-1, 0, currentNode, arr) and arr[currentNode.position[0]-1][currentNode.position[1]] != 1 and Node((currentNode.position[0]-1, currentNode.position[1])) not in openset:
             temp = Node((currentNode.position[0]-1, currentNode.position[1]))
             currentNode.children.append(temp)
 
-        if check_valid_bounds(0, 1, currentNode, arr) and visited[currentNode.position[0]][currentNode.position[1]+1] == False and arr[currentNode.position[0]][currentNode.position[1]+1] != 1 and Node((currentNode.position[0], currentNode.position[1]+1)) not in openset:
+        if check_valid_bounds(0, 1, currentNode, arr) and arr[currentNode.position[0]][currentNode.position[1]+1] != 1 and Node((currentNode.position[0], currentNode.position[1]+1)) not in openset:
             temp = Node((currentNode.position[0], currentNode.position[1]+1))
             currentNode.children.append(temp)
 
-        if check_valid_bounds(0, -1, currentNode, arr) and visited[currentNode.position[0]][currentNode.position[1]-1] and arr[currentNode.position[0]][currentNode.position[1]-1] != 1 and Node((currentNode.position[0], currentNode.position[1]-1)) not in openset:
+        if check_valid_bounds(0, -1, currentNode, arr) and arr[currentNode.position[0]][currentNode.position[1]-1] != 1 and Node((currentNode.position[0], currentNode.position[1]-1)) not in openset:
             temp = Node((currentNode.position[0], currentNode.position[1]-1))
             currentNode.children.append(temp)
         
@@ -137,7 +138,7 @@ def a_star(arr):
     return []
 
 if __name__ == "__main__":
-    arr = build_maze(4, .1)
+    arr = build_maze(100, .1)
     print(a_star(arr))
 
 
