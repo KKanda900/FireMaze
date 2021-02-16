@@ -112,7 +112,6 @@ class MazeGUI:
             for j in range(len(fire_maze[0])):
                 everything[i][j]=fire_maze[i][j]+fire_array[i][j]
 
-
         self.x = 0
         self.y = 0
         screen = self.display

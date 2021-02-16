@@ -73,34 +73,39 @@ class MazeGUI:
     def generate_fire_maze(self, probability):
         q = probability
         fire_maze = self.tracking_obstacles
-        #print("Hello fire maze",fire_maze)
-        everything = numpy.zeros((len(fire_maze), len(fire_maze[0])))
-        fire = 0
+        # print("Hello fire maze",fire_maze)
         fire_array = self.fire_array
-        fire_array_copy = fire_array
-        #print("hello fire array",self.fire_array)
+        fire_array_copy = numpy.zeros((len(fire_maze), len(fire_maze)))
+        for x in range(0, len(fire_maze)):
+            for y in range(0, len(fire_maze)):
+                fire_array_copy[x][y] = fire_array[x][y]
+        # print("hello fire array",self.fire_array)
         if self.fire_index == 0:
-            x = random.randint(0, len(fire_maze) - 1)
-            y = random.randint(0, len(fire_maze) - 1)
-            if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
-                fire_array[x][y] = 2
-                self.tracking_obstacles[x][y] = 2
-                self.fire_maze[x][y] = FireNode(2, 1.0) # represents the fire
-            self.fire_index += 1
+            print("wtf")
+            while self.fire_index == 0:  # for the first one does a random fire
+                y = random.randint(0, len(fire_maze) - 1)
+                x = random.randint(0, len(fire_maze) - 1)
+                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (
+                        x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
+                    fire_array[x][y] = 2
+                    self.tracking_obstacles[x][y] = 2
+                    self.fire_index += 1
+                    return self.tracking_obstacles
         else:
-            for i in range(0, len(self.tracking_obstacles) - 1):
-                for j in range(0, len(self.tracking_obstacles) - 1):
+            print("wtfpart2")
+            for i in range(0, len(self.tracking_obstacles)):
+                for j in range(0, len(self.tracking_obstacles)):
                     fire = 0
                     if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
-                        if fire_array_copy[i+1][j] == 2:
+                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i + 1][j] == 2:
                             fire += 1
-                        if fire_array_copy[i-1][j] == 2 and i != 0:
+                        if fire_array_copy[i - 1][j] == 2 and i != 0:
                             fire += 1
-                        if fire_array_copy[i][j+1] == 2:
+                        if j != len(self.tracking_obstacles) - 1 and fire_array_copy[i][j + 1] == 2:
                             fire += 1
-                        if fire_array_copy[i][j-1] == 2 and j != 0:
+                        if fire_array_copy[i][j - 1] == 2 and j != 0:
                             fire += 1
-                        prob = 1 - ((1 - q)**fire)
+                        prob = 1 - ((1 - q) ** fire)
                         if fire > 0 and random.random() <= prob and prob > 0:
                             fire_array[i][j] = 2
                             self.tracking_obstacles[i][j] = 2
@@ -108,55 +113,24 @@ class MazeGUI:
                     elif fire_maze[i][j] == 1:
                         self.fire_maze[i][j] = FireNode(1, 0.0)
                     else:
-                        if fire_array_copy[i+1][j] == 2:
+                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i + 1][j] == 2:
                             fire += 1
-                        if fire_array_copy[i-1][j] == 2 and i != 0:
+                        if fire_array_copy[i - 1][j] == 2 and i != 0:
                             fire += 1
-                        if fire_array_copy[i][j+1] == 2:
+                        if j != len(self.tracking_obstacles) - 1 and fire_array_copy[i][j + 1] == 2:
                             fire += 1
-                        if fire_array_copy[i][j-1] == 2 and j != 0:
+                        if fire_array_copy[i][j - 1] == 2 and j != 0:
                             fire += 1
-                        prob = 1 - ((1 - q)**fire)
+                        prob = 1 - ((1 - q) ** fire)
                         self.fire_maze[i][j] = FireNode(0, prob)
-        self.x = 0
-        self.y = 0
-        screen = self.display
-        size = self.dim
-        tracking_array = self.tracking_obstacles
 
-        for k in range(0, size):
-            self.x = 20
-            self.y += 20
-            for b in range(0, size):
-                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size-1 and b == size-1:  # goal node
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell)
-                elif fire_array[k][b] == 2:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, RED, cell)
-                else:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 20
-        
-        return True
+        print(self.tracking_obstacles)
+        return self.tracking_obstacles
 
     def check_valid_bounds(self, i, j, pop_value, arr):
         i = pop_value[0] + i
         j = pop_value[1] + j
-        if i >= 0 and i < len(arr) and j >= 0 and j < len(arr) and arr[i][j] != 1:
+        if i >= 0 and i < len(arr) and j >= 0 and j < len(arr):
             return True
         else:
             return False
@@ -239,7 +213,7 @@ class MazeGUI:
         DEAD = False
         start = (0, 0)
         while ALIVE:
-            self.generate_fire_maze(0.2)
+            self.generate_fire_maze(0.5)
             time.sleep(1)
             escape_route = self.fire_route_search(start)
             print(len(escape_route))
