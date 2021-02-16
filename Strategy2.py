@@ -158,17 +158,19 @@ class MazeGUI:
     def generate_fire_maze1(self, probability, bln):
         q = probability
         fire_maze = self.tracking_obstacles
+        #print("Hello fire maze",fire_maze)
         everything = numpy.zeros((len(fire_maze), len(fire_maze[0])))
         fire = 0
         fire_array = self.fire_array
         fire_array_copy = fire_array
-
+        #print("hello fire array",self.fire_array)
         if bln:
             while bln:  # for the first one does a random fire
                 y = random.randint(0, len(fire_maze) - 1)
                 x = random.randint(0, len(fire_maze) - 1)
-                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1:
+                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x!=0 and y!=0) and (x!=len(fire_maze)-1 and y!=len(fire_maze)-1) :
                     fire_array[x][y] = 2
+                    self.tracking_obstacles[x][y]=2
                     break
         else:
             for i in range(0, len(self.tracking_obstacles) - 1):
@@ -186,18 +188,44 @@ class MazeGUI:
                         prob = 1 - ((1 - q)**fire)
                         if fire > 0 and random.random() <= prob and prob > 0:
                             fire_array[i][j] = 2
+                            self.tracking_obstacles[i][j]=2
+                            #print("five:",self.tracking_obstacles)
+        self.x = 0
+        self.y = 0
+        screen = self.display
+        size = self.dim
+        tracking_array = self.tracking_obstacles
 
-        for i in range(len(fire_maze)):
-            for j in range(len(fire_maze[0])):
-                everything[i][j]=fire_maze[i][j]+fire_array[i][j]
-        #print(everything)
-        return everything
+        for k in range(0, size):
+            self.x = 20
+            self.y += 20
+            for b in range(0, size):
+                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, YELLOW, cell)
+                elif k == size-1 and b == size-1:  # goal node
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, GREEN, cell)
+                elif tracking_array[k][b] == 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell)
+                elif fire_array[k][b] == 2:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLUE, cell)
+                else:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+                pygame.display.update()
+                self.x += 20
+        return self.tracking_obstacles
 
-    def bfs_tree_search1(self,everything,start,goal):
-        arr = everything
-        #print('hi',everything,start,goal)
-
-
+    def bfs_tree_search1(self,start,goal):
+        arr = self.tracking_obstacles
         # now define the start and end node which in our case is the first indicies and the last indicies respectively
 
         # now because we are working with bfs, we know bfs calls for a fringe in the form of a queue because of the queue's policy (FIFO)
@@ -212,6 +240,7 @@ class MazeGUI:
 
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
+            #print(fringe)
             current = fringe.popleft()
             visited[current[0]][current[1]] = True
             if current == goal:
@@ -238,7 +267,7 @@ class MazeGUI:
 
                 bfs_route.append(start)
                 bfs_route.reverse()
-                print(bfs_route)
+                #print(bfs_route)
                 return bfs_route
 
             else:
@@ -267,26 +296,33 @@ class MazeGUI:
                         path.append(current)
         return False
 
-    def strategy2(self,everything):
-        path=self.bfs_tree_search1(everything,(0,0),(int(sys.argv[1])-1,int(sys.argv[1])-1))
-        print(path)
+    def strategy2(self):
+        Final_path=[]
+        path1=[]
+        self.generate_fire_maze1(0.2,True)
+        time.sleep(1.5)
+        path=self.bfs_tree_search1((0,0),(int(sys.argv[1])-1,int(sys.argv[1])-1))
         if path==False:
             return False
-        for i in range(len(path)):
-            if path==False:
+        path1.append(path[0])
+        x=len(path1)
+        while(x!=0):
+            self.generate_fire_maze1(0.2,False)
+            time.sleep(1)         
+            path1=self.bfs_tree_search1(path1[0],(int(sys.argv[1])-1,int(sys.argv[1])-1))
+            if path1==False:
                 return False
-            #print(i)
-            #print(path[i])
-            #print(self.generate_fire_maze1(0.2,False))
-            path=self.bfs_tree_search1(self.generate_fire_maze1(0.2,False),path[i],(int(sys.argv[1])-1,int(sys.argv[1])-1))
-        return path   
-
-    def executePath(self,path,grid):
-        current_cell=path[0]
-        everything = maze.generate_fire_maze1(0.2,False)
+            time.sleep(1)
+            path1=self.bfs_tree_search1(path1[1],(int(sys.argv[1])-1,int(sys.argv[1])-1))
+            if path1==False:
+                return False
+            
+            self.draw_path(path1[0])
+            if path1[0]==(int(sys.argv[1])-1,int(sys.argv[1])-1):
+                return True
     
     def bfs_tree_search(self):
-        print('start bfs')
+        #print('start bfs')
         arr = self.tracking_obstacles
 
         # now define the start and end node which in our case is the first indicies and the last indicies respectively
@@ -305,11 +341,13 @@ class MazeGUI:
 
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
+            #print(fringe)
             current = fringe.popleft()
             visited[current[0]][current[1]] = True
             if current == goal:
                 path.append(current)
                 path.reverse()
+                #print('path',path)
                 # now that we found the end node, let's perform a recursive backtracking algorithm to find the actual path
                 bfs_route = []
                 while path[0] != start:
@@ -333,7 +371,7 @@ class MazeGUI:
                 bfs_route.append(start)
                 
                 bfs_route.reverse()
-                print('bfs_route_end',bfs_route)
+                #print('bfs_route_end',bfs_route)
                 self.draw_path(bfs_route)
                 
                 return bfs_route
@@ -362,7 +400,6 @@ class MazeGUI:
                     fringe.append((current[0], current[1] + 1))
                     if current not in path:
                         path.append(current)
-        print('path',path)
         return []
 
     def astar_check_valid_bounds(self, i, j, pop_value, arr):
@@ -465,7 +502,7 @@ class MazeGUI:
 
         return []
     
-    def draw_path(self, arr): # arr contains the coordinates of the path to draw
+    def draw_path(self, position): # arr contains the coordinates of the path to draw
         self.x = 0
         self.y = 0
         screen = self.display
@@ -473,41 +510,40 @@ class MazeGUI:
         tracking_array = self.tracking_obstacles
         curr = None
         
-        for i in range(0, len(tracking_array)):
-            for j in range(0, len(tracking_array)):
-                if len(arr) > 0:
-                    curr = arr.pop(0)
-                tracking_array[curr[0]][curr[1]] = 2
-                self.x = 0 
-                self.y = 0
-                for k in range(0, size):
-                    self.x = 20
-                    self.y += 20
-                    for b in range(0, size):
-                        if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, YELLOW, cell)
-                        elif k == size-1 and b == size-1:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, GREEN, cell)
-                        elif tracking_array[k][b] == 1:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, BLACK, cell)
-                        elif tracking_array[k][b] == 2:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, RED, cell)
-                        else:
-                            cell = pygame.Rect(
-                                self.x, self.y, self.cell_size, self.cell_size)
-                            pygame.draw.rect(screen, BLACK, cell, 1)
-                        pygame.display.update()
-                        self.x += 20
-                        # time.sleep(0.1)
-
+        curr = position
+        tracking_array[curr[0]][curr[1]] = 3
+                
+        for k in range(0, size):
+            self.x = 20
+            self.y += 20
+            for b in range(0, size):
+                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, YELLOW, cell)
+                elif k == size - 1 and b == size - 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, GREEN, cell)
+                elif tracking_array[k][b] == 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell)
+                elif tracking_array[k][b] == 2:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLUE, cell)
+                elif tracking_array[k][b] == 3:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, RED, cell)
+                else:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+                pygame.display.update()
+                self.x += 20
+    
 def start():
 
     if(len(sys.argv) != 4):
@@ -538,18 +574,17 @@ def start():
     else:
         print("Incorrect algorithm inputted")
         exit(1)
-    """
-    for t in range(0, 2):
+    '''
+    for t in range(0, 20):
         if t != 0:
             maze.generate_fire_maze(.1, False)
         else:
             maze.generate_fire_maze(.1, True)
         time.sleep(1.5)
-    """
-    print(maze.generate_fire_maze1(0.2,True))
-    everything = maze.generate_fire_maze1(0.2,True)
-    print(maze.strategy2(everything))
-
+    '''
+    #everything = maze.generate_fire_maze1(0.2,True)
+    print(maze.strategy2())
+    
     running = True
     
     index = 0
