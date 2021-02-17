@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 '''
 The purpose of Run_Tests.py is to conduct tests on the various algorithms we implemented in 
 specific scenerios.
+
+Same code wise just without the drawing portions, so we can run the tests better
 '''
 
 class Maze:
@@ -67,9 +69,6 @@ class Maze:
         return return_array
 
     def a_star(self, arr):
-
-        print("A_Star Starting")
-
         maze_array = arr
         fringe = []
         visited = [[-1, -1, -1]]
@@ -173,7 +172,6 @@ class Maze:
                     for i in range(0, len(temp_array)):  # updating tracker array
                         tracker.append(temp_array[i])
             if current == goal:
-                print("A Star Ending")
                 tracker.reverse()
                 self.a_star_nodes = len(tracker)
                 a_star_route = []
@@ -198,7 +196,6 @@ class Maze:
                 a_star_route.reverse()
                 return True
 
-        print("2d array sucks")
         return False
 
     def check_valid_bounds(self, i, j, pop_value, arr):
@@ -210,9 +207,6 @@ class Maze:
             return False
     
     def bfs_tree_search(self, arr):
-
-        print("BFS Starting")
-
         # now define the start and end node which in our case is the first indicies and the last indicies respectively
         start = (0, 0)
         goal = (len(arr) - 1, len(arr) - 1)
@@ -232,7 +226,6 @@ class Maze:
             current = fringe.popleft()
             visited[current[0]][current[1]] = True
             if current == goal:
-                print("BFS ENDED")
                 path.append(current)
                 self.bfs_nodes = len(path)
                 path.reverse()
@@ -283,12 +276,11 @@ class Maze:
                     fringe.append((current[0], current[1] + 1))
                     if current not in path:
                         path.append(current)
-            
         return []
 
 def run_tests():
     Run_Tests = Maze()
-    tests = [(500, 0.1), (500, 0.2), (500, 0.3), (500, 0.4), (500, 0.5)]
+    tests = [(200, 0.9), (200, 0.9)]
 
     while len(tests) != 0:
         print("ITERATION")
@@ -314,5 +306,27 @@ def run_tests():
     plt.show()
     exit(0)
 
+def largest_bfs():
+    Run_Tests = Maze()
+
+    Running = True
+    start_time = 0
+    end_time = 0
+    while Running:
+        start_time = time.time()
+        maze = Run_Tests.build_maze(100, 0.3)
+        bfs = Run_Tests.bfs_tree_search(maze)
+        if bfs != [] or bfs == []:
+            end_time = time.time()
+            Running = False
+            break
+    
+    elapsed_time = end_time-start_time
+
+    if elapsed_time <= 60.0:
+        return elapsed_time
+    
+    return elapsed_time
+
 if __name__ == "__main__":
-    run_tests()
+    print(largest_bfs())
