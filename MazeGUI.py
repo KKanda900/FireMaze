@@ -153,7 +153,7 @@ class MazeGUI:
     def a_star(self):  # A* algo
         maze_array = self.tracking_obstacles
         fringe = []  # priority queue
-        visited = [[-1, -1, -1]]   # keeps track of all the visited spots
+        visited = [[-1, -1, -1]]   # keeps track of all the visited cells
         child1 = []
         child2 = []
         child3 = []
@@ -164,9 +164,9 @@ class MazeGUI:
         goal = [n - 1, n - 1]
         tracker = []  # array for final path
         fringe.append(start)
-        parent = numpy.zeros([n, n])  # 1 top, 2 right, 3 bottom, 4 left - to keep track of the parent of current node
+        parent = numpy.zeros([n, n])  # 1 top, 2 right, 3 bottom, 4 left - to keep track of the parent of each node
         while len(fringe) > 0:
-            current = fringe.pop(0)  # take out the child with highes priority
+            current = fringe.pop(0)  # take out the child with highest priority
             if len(child1) != 0:
                 child1.pop()
             if len(child2) != 0:
@@ -206,7 +206,7 @@ class MazeGUI:
                             fringe = self.sorting(fringe, child4, cost)
                             parent[current[0]][[current[1] - 1]] = 4
                 else:
-                    if current not in fringe:  # if current is not in fringe we go through it's neighbours
+                    if current not in fringe:  # if current is not in fringe we go through its neighbours
                         if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:
                             child1.append([current[0] - 1, current[1]])  # top cell
                             if child1[0] not in visited and child1[0] not in fringe and cost[current[0] - 1][
