@@ -201,13 +201,10 @@ def run_tests():
         maze = Run_Tests.build_maze(curr_test[0], curr_test[1])
         dimensions=curr_test[0]
         probability=curr_test[1]
-        start_x=int(random.uniform(0,dimensions))
-        start_y=int(random.uniform(0,dimensions))
-        end_x=int(random.uniform(0,dimensions))
-        end_y=int(random.uniform(0,dimensions))
-        while start_x==end_x and end_y==start_y:
-            end_x=int(random.uniform(0,dimensions))
-            end_y=int(random.uniform(0,dimensions))
+        start_x=int(random.uniform(0,dimensions-1))
+        start_y=int(random.uniform(0,dimensions-1))
+        end_x=int(random.uniform(0,dimensions-1))
+        end_y=int(random.uniform(0,dimensions-1))
         name=Run_Tests.dfs((start_x,start_y),(end_x,end_y))
         f = open("Density_vs_Success.txt", "a")
         if(name==True):
@@ -216,6 +213,7 @@ def run_tests():
             q=0
         print(q)
         f.write(str(curr_test[1]) + " " + str(q) + '\n')
+
     plot = pd.read_csv('Density_vs_Success.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
     x = plot[0]
