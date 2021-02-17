@@ -187,9 +187,6 @@ class Maze:
                     self.visited.append(current)
         return False
 
-
-
-    
 def run_tests():
     Run_Tests = Maze()
     tests = [(100, 0.1), (100, 0.2), (100, 0.3), (100, 0.4), (100, 0.5)]
@@ -228,6 +225,28 @@ def run_tests():
     plt.show()
     exit(0)
 
+def largest_dfs():
+    Run_Tests = Maze()
+
+    Running = True
+    start_time = 0
+    end_time = 0
+    while Running:
+        start_time = time.time()
+        maze = Run_Tests.build_maze(2000, 0.3)
+        bfs = Run_Tests.dfs((0,0), (9,9))
+        if bfs != [] or bfs == []:
+            end_time = time.time()
+            Running = False
+            break
+    
+    elapsed_time = end_time-start_time
+
+    if elapsed_time <= 60.0:
+        return elapsed_time
+    
+    return elapsed_time
+
 if __name__ == "__main__":
-    run_tests()
+    print(largest_dfs())
 

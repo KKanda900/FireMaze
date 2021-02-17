@@ -22,8 +22,6 @@ class MazeGUI:
     dim = 10
     tracking_obstacles = []
     display = None
-    bfs_nodes = 0
-    a_star_nodes = 0
 
     # this is where the logic to build the maze is based to create based on a certain obstacle density
     def build_maze(self, screen, size, probability):
@@ -283,13 +281,14 @@ class MazeGUI:
         print("2d array sucks")
         return False
 
+    # check if the bounds are valid for the given maze
     def check_valid_bounds(self, i, j, pop_value, arr):
-        i = pop_value[0] + i
-        j = pop_value[1] + j
+        i = pop_value[0] + i # arg i indicate direction +1 or -1 for up and down
+        j = pop_value[1] + j # arg j indicates direction +1 or -1 for left and right
         if i >= 0 and i < len(arr) and j >= 0 and j < len(arr):
-            return True
+            return True # in bounds, return true
         else:
-            return False
+            return False # not in bounds, return false
     
     def bfs_tree_search(self):
         arr = self.tracking_obstacles
@@ -484,19 +483,23 @@ class MazeGUI:
     
     # this method draws the path given by bfs or a star
     def draw_path(self, arr): # arr contains the coordinates of the path to draw
-        self.x = 0
-        self.y = 0
+        self.x = 0 # reset x for drawing
+        self.y = 0 # reset y for drawing
         screen = self.display
         size = self.dim
+
+        # use the global tracking obstacles to draw
         tracking_array = self.tracking_obstacles
-        curr = None
+        curr = None # this is where we will pop one element at a time for the array
         
+        # pop one element at a time and store that element inside tracking array to draw the path
         for i in range(0, len(tracking_array)):
             for j in range(0, len(tracking_array)):
                 if len(arr) > 0:
                     curr = arr.pop(0)
                 tracking_array[curr[0]][curr[1]] = 2
-                
+        
+        # same mechanism as in drawing the maze but now it just includes drawing the full path given by one of the algos used
         for k in range(0, size):
             self.x = 10
             self.y += 10
@@ -574,6 +577,7 @@ def start():
         # update pygame's display to display everything
         pygame.display.update()
 
+# this is where the start method will be launched from
 if __name__ == "__main__":
 
     # check the arguments given (has to start with atleast 4)

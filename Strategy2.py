@@ -34,13 +34,17 @@ class MazeGUI:
     fire_array = numpy.zeros((dim, dim))
 
 
+    # this is where the logic to build the maze is based to create based on a certain obstacle density
     def build_maze(self, screen, size, probability):
+        self.x = 0 # reset x upon creating the maze again
+        self.y = 0 # reset y upon creating the maze again
         self.dim = size
         self.display = screen
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
-        obstacles = int((size*size)*probability)  # if the maze area is 100 then there should be only 10 obstacles
+        obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles
         tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
         dim_array = list(range(0, size))
+        # iterate based on the amount of obstacles that are left, when there are no obstacles left then draw the maze
         while obstacles != 0:
             i = random.choice(dim_array)
             j = random.choice(dim_array)
@@ -52,12 +56,11 @@ class MazeGUI:
                 arr = [0, 1]  # these will represent random choices
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
                     tracking_array[i][j] = 1
-                    #everything[i][j]=1
                     obstacles -= 1
 
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 10
+            self.y += 10
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
@@ -72,9 +75,10 @@ class MazeGUI:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 10
 
         self.tracking_obstacles = tracking_array
+        return self.tracking_obstacles
 
     def generate_fire_maze(self, probability, bln):
         q = probability
