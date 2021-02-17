@@ -161,6 +161,10 @@ class MazeGUI:
         while len(fringe) > 0:
             #print(fringe)
             current = fringe.popleft()
+
+            if self.tracking_obstacles[current[0]][current[1]] == 2: # agent is on fire
+                return []
+
             visited[current[0]][current[1]] = True
             if current == goal:
                 path.append(current)
