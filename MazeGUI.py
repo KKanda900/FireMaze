@@ -1,6 +1,8 @@
 import pygame, sys, random, numpy, math, time, threading
 from collections import deque
-import pandas as pd
+import Strategy_1 as s1
+import Strategy2 as s2
+import Strategy_3 as s3
 
 '''
 This is the main code where we will run the visualizing for the various graph algorithms for dfs, bfs, a star
@@ -543,13 +545,21 @@ def start():
     elif sys.argv[3] == 'a_star': # runs a star
         maze.build_maze(screen, float(sys.argv[1]), int(sys.argv[2])) # start off with building the maze
         maze.a_star()
-    else: # if the user command isn't bfs or a star, it will automatically run dfs
+    elif sys.argv[3] == 'dfs': # if the user command isn't bfs or a star, it will automatically run dfs
         answer = input("Do you want to run DFS on this generated maze for any two points: type yes or no: ")
         if answer.lower() == "yes":
             beginning=input("Enter a start node in the form of x,y: ")
             goal=input("Enter a final node in the form of x,y: ")
             maze.create_maze_dfs(screen, int(sys.argv[1]), float(sys.argv[2]), beginning, goal)
             print(maze.dfs(maze.tracking_obstacles,beginning,goal)) # prints true or false if there is a given path in the console
+    
+    # if we reach this point this means that the third argument is a strategy we are running s1, s2, or s3
+    if sys.argv[3] == 's1':
+        s1.start()
+    elif sys.argv[3] == 's2':
+        s2.start()
+    else:
+        s3.strategy_3()
 
     # pygame variables in order to create the visualization and to run pygame in general
     running = True

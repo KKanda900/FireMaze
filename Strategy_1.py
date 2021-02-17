@@ -12,22 +12,6 @@ RED = (255, 0, 0)
 current1 = 0
 dimensions = 0
 
-
-class Node:
-    position = ()
-    children = []
-    g = 0
-    h = 0
-    f = 0
-
-    def __init__(self, position):
-        self.position = position
-        children = []
-        g = 0
-        h = 0
-        f = 0
-
-
 class MazeGUI:
     x, y = 0, 0
     cell_size = 20
@@ -140,7 +124,7 @@ class MazeGUI:
                 elif fire_array[k][b] == 2:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLUE, cell)
+                    pygame.draw.rect(screen, RED, cell)
                 else:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
@@ -201,7 +185,7 @@ class MazeGUI:
 
     def strategy1(self):
 
-        self.generate_fire_maze1(0.2, True)
+        self.generate_fire_maze1(float(sys.argv[4]), True)
         time.sleep(1.5)
         path = self.bfs_tree_search()
         path.reverse()
@@ -222,7 +206,7 @@ class MazeGUI:
             print(curr)
             if curr[0] == dimension and curr[1] == dimension:
                 return True
-            self.generate_fire_maze1(0.2, False)
+            self.generate_fire_maze1(float(sys.argv[4]), False)
             time.sleep(.5)
         print("Code is broken")
 
@@ -342,11 +326,11 @@ class MazeGUI:
                 elif tracking_array[k][b] == 2:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLUE, cell)
+                    pygame.draw.rect(screen, RED, cell)
                 elif tracking_array[k][b] == 3:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, RED, cell)
+                    pygame.draw.rect(screen, BLUE, cell)
                 else:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
@@ -354,16 +338,11 @@ class MazeGUI:
                 pygame.display.update()
                 self.x += 20
 
-
 def start():
 
-    ''' if (len(sys.argv) != 3):
-        print("Incorrect Usage: python MazeGUI.py <dim> <probability> <algorithm>")
-        sys.exit(1)
-    '''
     # command line arguments
-    dim = 10  # int(sys.argv[1])
-    probability = .1  # float(sys.argv[2])
+    dim = int(sys.argv[1]) 
+    probability = float(sys.argv[2])
 
     # inital conditions to start pygame
     pygame.init()
@@ -374,30 +353,15 @@ def start():
     clock = pygame.time.Clock()
     font = pygame.font.SysFont('Comic Sans MS', 30)
 
+    # this is the class that will assist in starting the maze
     maze = MazeGUI()
+
+    # first build the starting maze
     maze.build_maze(screen, dim, probability)
+    print(maze.strategy1()) # run strategy 1
 
-    '''if sys.argv[3] == 'bfs':
-        pass
-        #bfs = maze.bfs_tree_search()
-    elif sys.argv[3] == 'a_star':
-        a_star = maze.a_star()
-    else:
-        print("Incorrect algorithm inputted")
-        exit(1)
-    for t in range(0, 20):
-        if t != 0:
-            maze.generate_fire_maze(.1, False)
-        else:
-            maze.generate_fire_maze(.1, True)
-        time.sleep(1.5)
-    '''
-    # everything = maze.generate_fire_maze1(0.2,True)
-    print(maze.strategy1())
-
+    # here are some extra factors that pygame needs in order to run properly
     running = True
-
-    index = 0
     while running:
         clock.tick(60)
         events = pygame.event.get()

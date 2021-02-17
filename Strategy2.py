@@ -292,7 +292,7 @@ class MazeGUI:
 
     def strategy2(self):
         path1=[]
-        self.generate_fire_maze1(0.2,True)
+        self.generate_fire_maze1(float(sys.argv[4]),True)
         time.sleep(1.5)
         path=self.bfs_tree_search1((0,0),(int(sys.argv[1])-1,int(sys.argv[1])-1))
         if path==False:
@@ -300,7 +300,7 @@ class MazeGUI:
         path1.append(path[0])
         x=len(path1)
         while(x!=0):
-            self.generate_fire_maze1(0.2,False)
+            self.generate_fire_maze1(float(sys.argv[4]),False)
             time.sleep(1)         
             path1=self.bfs_tree_search1(path1[0],(int(sys.argv[1])-1,int(sys.argv[1])-1))
             if path1==False:
@@ -539,10 +539,6 @@ class MazeGUI:
     
 def start():
 
-    if(len(sys.argv) != 4):
-        print("Incorrect Usage: python MazeGUI.py <dim> <probability> <algorithm>")
-        sys.exit(1)
-
     # command line arguments
     dim = int(sys.argv[1])
     probability = float(sys.argv[2])
@@ -559,28 +555,10 @@ def start():
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
     
-    if sys.argv[3] == 'bfs':
-        pass
-        #bfs = maze.bfs_tree_search()
-    elif sys.argv[3] == 'a_star':
-        a_star = maze.a_star()
-    else:
-        print("Incorrect algorithm inputted")
-        exit(1)
-    '''
-    for t in range(0, 20):
-        if t != 0:
-            maze.generate_fire_maze(.1, False)
-        else:
-            maze.generate_fire_maze(.1, True)
-        time.sleep(1.5)
-    '''
     #everything = maze.generate_fire_maze1(0.2,True)
     print(maze.strategy2())
     
     running = True
-    
-    index = 0
     while running:
         clock.tick(60)
         events = pygame.event.get()

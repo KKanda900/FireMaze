@@ -213,7 +213,7 @@ class MazeGUI:
         DEAD = False
         start = (0, 0)
         while ALIVE:
-            self.generate_fire_maze(0.5)
+            self.generate_fire_maze(float(sys.argv[4]))
             time.sleep(1)
             escape_route = self.fire_route_search(start)
             print(len(escape_route))
