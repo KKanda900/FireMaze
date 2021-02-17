@@ -79,7 +79,6 @@ class MazeGUI:
     def generate_fire_maze(self, probability, bln):
         q = probability
         fire_maze = self.tracking_obstacles
-        everything = numpy.zeros((len(fire_maze), len(fire_maze[0])))
         fire = 0
         fire_array = self.fire_array
         fire_array_copy = fire_array
@@ -111,6 +110,7 @@ class MazeGUI:
         for i in range(len(fire_maze)):
             for j in range(len(fire_maze[0])):
                 everything[i][j]=fire_maze[i][j]+fire_array[i][j]
+
 
         self.x = 0
         self.y = 0
@@ -157,12 +157,9 @@ class MazeGUI:
     def generate_fire_maze1(self, probability, bln):
         q = probability
         fire_maze = self.tracking_obstacles
-        #print("Hello fire maze",fire_maze)
-        everything = numpy.zeros((len(fire_maze), len(fire_maze[0])))
         fire = 0
         fire_array = self.fire_array
         fire_array_copy = fire_array
-        #print("hello fire array",self.fire_array)
         if bln:
             while bln:  # for the first one does a random fire
                 y = random.randint(0, len(fire_maze) - 1)
@@ -172,15 +169,15 @@ class MazeGUI:
                     self.tracking_obstacles[x][y]=2
                     break
         else:
-            for i in range(0, len(self.tracking_obstacles) - 1):
-                for j in range(0, len(self.tracking_obstacles) - 1):
+            for i in range(0, len(self.tracking_obstacles)):
+                for j in range(0, len(self.tracking_obstacles)):
                     fire = 0
                     if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
-                        if fire_array_copy[i+1][j] == 2:
+                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i+1][j] == 2:
                             fire += 1
                         if fire_array_copy[i-1][j] == 2 and i != 0:
                             fire += 1
-                        if fire_array_copy[i][j+1] == 2:
+                        if j != len(self.tracking_obstacles) - 1 and fire_array_copy[i][j+1] == 2:
                             fire += 1
                         if fire_array_copy[i][j-1] == 2 and j != 0:
                             fire += 1
@@ -188,7 +185,6 @@ class MazeGUI:
                         if fire > 0 and random.random() <= prob and prob > 0:
                             fire_array[i][j] = 2
                             self.tracking_obstacles[i][j]=2
-                            #print("five:",self.tracking_obstacles)
         self.x = 0
         self.y = 0
         screen = self.display
@@ -266,7 +262,6 @@ class MazeGUI:
 
                 bfs_route.append(start)
                 bfs_route.reverse()
-                #print(bfs_route)
                 return bfs_route
 
             else:
@@ -296,7 +291,6 @@ class MazeGUI:
         return False
 
     def strategy2(self):
-        Final_path=[]
         path1=[]
         self.generate_fire_maze1(0.2,True)
         time.sleep(1.5)
