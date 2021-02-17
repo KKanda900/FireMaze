@@ -164,10 +164,10 @@ class MazeGUI:
         goal = [n - 1, n - 1]
         tracker = []  # array for final path
         fringe.append(start)
-        parent = numpy.zeros([n, n])  # 1 top, 2 right, 3 bottom, 4 left - to keep track of the parent of each node
+        parent = numpy.zeros([n, n])  # 3 top, 4 right, 1 bottom, 2 left - to keep track of the parent of each node
         while len(fringe) > 0:
             current = fringe.pop(0)  # take out the child with highest priority
-            if len(child1) != 0:
+            if len(child1) != 0:  # empty the child arrays
                 child1.pop()
             if len(child2) != 0:
                 child2.pop()
@@ -176,14 +176,14 @@ class MazeGUI:
             if len(child4) != 0:
                 child4.pop()
             if current not in visited:  # only continue if the current node is not visited before
-                if not fringe:  # if the fringe is empty do not check for child in fringe
-                    if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:
+                if not fringe:  # if the fringe is empty it does not check for child in fringe
+                    if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:  # checks if it's not the top row and that there is not an obstacle on top of it
                         child1.append([current[0] - 1, current[1]])  # top cell
-                        if child1[0] not in visited and cost[current[0] - 1][[current[1]]] >= cost[current[0]][
-                            [current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
-                            cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
+                        if child1[0] not in visited and cost[current[0] - 1][[current[1]]] >= cost[current[0]][  # if the child is not visited
+                            [current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:  # and the path it took is shorter than before or it's the firt time getting there
+                            cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1  # then add it to the fringe with priority queue
                             fringe = self.sorting(fringe, child1, cost)
-                            parent[current[0] - 1][[current[1]]] = 3
+                            parent[current[0] - 1][[current[1]]] = 3  # set its parent to the top cell
                     if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1:
                         child2.append([current[0], current[1] + 1])  # right cell
                         if child2[0] not in visited and cost[current[0]][[current[1] + 1]] >= cost[current[0]][
@@ -210,11 +210,11 @@ class MazeGUI:
                         if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:
                             child1.append([current[0] - 1, current[1]])  # top cell
                             if child1[0] not in visited and child1[0] not in fringe and cost[current[0] - 1][
-                                [current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][
-                                [current[1]]] == 0:
-                                cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
-                                fringe = self.sorting(fringe, child1, cost)
-                                parent[current[0] - 1][[current[1]]] = 3
+                                [current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][ # if the child is not visited before and not in the fringe and there is no obstacle there
+                                [current[1]]] == 0:  # if the cost to get there is less than before or it's 0 - meaning it's first time getting there
+                                cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1  #  set cost to get to child: cost ot get to current + 1
+                                fringe = self.sorting(fringe, child1, cost)  # add child to the fringe - priority queue
+                                parent[current[0] - 1][[current[1]]] = 3  # set it's parent to top cell
                         if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1:
                             child2.append([current[0], current[1] + 1])  # right cell
                             if child2[0] not in visited and child2[0] not in fringe and cost [current[0]][
