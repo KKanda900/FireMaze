@@ -122,21 +122,23 @@ class MazeGUI:
         self.tracking_obstacles = tracking_array
         return self.tracking_obstacles
 
-    def distance_calculator(self, start, end):
+    def distance_calculator(self, start, end):  # calculates the eucledian distance between current point and goal
         x_diff = abs(start[0] - end[0])
         y_diff = abs(start[1] - end[1])
-        return x_diff + y_diff
+        return math.sqrt(x_diff**2 + y_diff**2)
 
-    def sorting(self, fringe, child, cost):
+    def sorting(self, fringe, child, cost):  # puts the new child in the priority queue depending on it's cost to get there and distance to goal
         return_array = []
-        child_dist = child[0][2]
+        child_dist = self.distance_calculator(child[0])
 
         if len(fringe) == 0:
             fringe.append(child[0])
             return fringe
 
         for i in range(0, len(fringe)):
-            if child_dist + cost[fringe[i][0]][fringe[i][1]] < fringe[i][2] + cost[fringe[i][0]][fringe[i][1]] and child[0] not in return_array:
+            curr_child_dist = self.distance_calculator(fringe[i])
+            if child_dist + cost[child[0][0]][child[0][1]] <= curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and \
+                    child[0] not in return_array:
                 return_array.append(child[0])
                 return_array.append(fringe[i])
                 i += 2
@@ -148,22 +150,23 @@ class MazeGUI:
 
         return return_array
 
-    def a_star(self):
+    def a_star(self):  # A* algo
         maze_array = self.tracking_obstacles
-        fringe = []
-        visited = [[-1, -1, -1]]
+        fringe = []  # priority queue
+        visited = [[-1, -1, -1]]   # keeps track of all the visited spots
         child1 = []
         child2 = []
         child3 = []
         child4 = []
         n = len(maze_array)
-        start = [0, 0, 2*n]
-        cost = numpy.zeros([n,n])
-        goal = [n - 1, n - 1, 0]
-        tracker = [start]
+        start = [0, 0]
+        cost = numpy.zeros([n, n])
+        goal = [n - 1, n - 1]
+        tracker = []  # array for final path
         fringe.append(start)
+        parent = numpy.zeros([n, n])  # 1 top, 2 right, 3 bottom, 4 left - to keep track of the parent of current node
         while len(fringe) > 0:
-            current = fringe.pop(0)
+            current = fringe.pop(0)  # take out the child with highes priority
             if len(child1) != 0:
                 child1.pop()
             if len(child2) != 0:
@@ -172,113 +175,97 @@ class MazeGUI:
                 child3.pop()
             if len(child4) != 0:
                 child4.pop()
-            if not fringe:
-                if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited:
-                    temp = [current[0] - 1, current[1]]
-                    child1.append([current[0] - 1, current[1], self.distance_calculator(temp, goal)])  # top
-                    cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
-                    fringe = self.sorting(fringe, child1, cost)
-                if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited:
-                    temp = [current[0], current[1] + 1]
-                    child2.append([current[0], current[1] + 1, self.distance_calculator(temp, goal)])  # right
-                    cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
-                    fringe = self.sorting(fringe, child2, cost)
-                if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited:
-                    temp = [current[0] + 1, current[1]]
-                    child3.append([current[0] + 1, current[1], self.distance_calculator(temp, goal)])  # bottom
-                    cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
-                    fringe = self.sorting(fringe, child3, cost)
-                if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited:
-                    temp = [current[0], current[1] - 1]
-                    child4.append([current[0], current[1] - 1, self.distance_calculator(temp, goal)])  # left
-                    cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
-                    fringe = self.sorting(fringe, child4, cost)
-            else:
-                if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1 and current not in visited and current not in fringe:
-                    temp = [current[0] - 1, current[1]]
-                    child1.append([current[0] - 1, current[1], self.distance_calculator(temp, goal)])  # top
-                    if child1[0] not in visited and child1[0] not in fringe:
-                        cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
-                        fringe = self.sorting(fringe, child1, cost)
-                if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1 and current not in visited and current not in fringe:
-                    temp = [current[0], current[1] + 1]
-                    child2.append([current[0], current[1] + 1, self.distance_calculator(temp, goal)])  # right
-                    if child2[0] not in visited and child2[0] not in fringe:
-                        cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
-                        fringe = self.sorting(fringe, child2, cost)
-                if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1 and current not in visited and current not in fringe:
-                    temp = [current[0] + 1, current[1]]
-                    child3.append([current[0] + 1, current[1], self.distance_calculator(temp, goal)])  # bottom
-                    if child3[0] not in visited and child3[0] not in fringe:
-                        cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
-                        fringe = self.sorting(fringe, child3, cost)
-                if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1 and current not in visited and current not in fringe:
-                    temp = [current[0], current[1] - 1]
-                    child4.append([current[0], current[1] - 1, self.distance_calculator(temp, goal)])  # left
-                    if child4[0] not in visited and child4[0] not in fringe:
-                        cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
-                        fringe = self.sorting(fringe, child4, cost)
-            visited.append(current)
-            if current[1] == tracker[len(tracker) - 1][1] + 1 and current[0] == tracker[len(tracker) - 1][0]:  # top
-                tracker.append(current)
-            elif current[1] == tracker[len(tracker) - 1][1] and current[0] == tracker[len(tracker) - 1][0] + 1:  # right
-                tracker.append(current)
-            elif current[1] == tracker[len(tracker) - 1][1] - 1 and current[0] == tracker[len(tracker) - 1][0]:  # bottom
-                tracker.append(current)
-            elif current[1] == tracker[len(tracker) - 1][1] and current[0] == tracker[len(tracker) - 1][0] - 1:  # left
-                tracker.append(current)
-            else:  # check if there was a dead end and update the tracker array to accommodate for that
-                temp_array = []
-                if len(tracker) == 1:  # edge case
-                    pass
+            if current not in visited:  # only continue if the current node is not visited before
+                if not fringe:  # if the fringe is empty do not check for child in fringe
+                    if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:
+                        child1.append([current[0] - 1, current[1]])  # top cell
+                        if child1[0] not in visited and cost[current[0] - 1][[current[1]]] >= cost[current[0]][
+                            [current[1]]] + 1 or cost[current[0] - 1][[current[1]]] == 0:
+                            cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
+                            fringe = self.sorting(fringe, child1, cost)
+                            parent[current[0] - 1][[current[1]]] = 3
+                    if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1:
+                        child2.append([current[0], current[1] + 1])  # right cell
+                        if child2[0] not in visited and cost[current[0]][[current[1] + 1]] >= cost[current[0]][
+                            [current[1]]] + 1 or cost[current[0]][[current[1] + 1]] == 0:
+                            cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
+                            fringe = self.sorting(fringe, child2, cost)
+                            parent[current[0]][[current[1] + 1]] = 2
+                    if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1:
+                        child3.append([current[0] + 1, current[1]])  # bottom cell
+                        if child3[0] not in visited and cost[current[0] + 1][[current[1]]] >= cost[current[0]][
+                            [current[1]]] + 1 or cost[current[0] + 1][[current[1]]] == 0:
+                            cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
+                            fringe = self.sorting(fringe, child3, cost)
+                            parent[current[0] + 1][[current[1]]] = 1
+                    if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1:
+                        child4.append([current[0], current[1] - 1])  # left cell
+                        if child4[0] not in visited and cost[current[0]][[current[1] - 1]] >= cost[current[0]][
+                            [current[1]]] + 1 or cost[current[0]][[current[1] - 1]] == 0:
+                            cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
+                            fringe = self.sorting(fringe, child4, cost)
+                            parent[current[0]][[current[1] - 1]] = 4
                 else:
-                    for i in range(0, len(tracker)):
-                        if current[1] == tracker[i][1] + 1 and current[0] == tracker[i][0]:  # top
-                            temp_array.append(current)
-                            break
-                        elif current[1] == tracker[i][1] and current[0] == tracker[i][0] + 1:  # right
-                            temp_array.append(current)
-                            break
-                        elif current[1] == tracker[i][1] - 1 and current[0] == tracker[i][0]:  # bottom
-                            temp_array.append(current)
-                            break
-                        elif current[1] == tracker[i][1] and current[0] == tracker[i][0] - 1:  # left
-                            temp_array.append(current)
-                            break
-                        else:
-                            temp_array.append(tracker[i])
+                    if current not in fringe:  # if current is not in fringe we go through it's neighbours
+                        if current[0] != 0 and maze_array[current[0] - 1][current[1]] != 1:
+                            child1.append([current[0] - 1, current[1]])  # top cell
+                            if child1[0] not in visited and child1[0] not in fringe and cost[current[0] - 1][
+                                [current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] - 1][
+                                [current[1]]] == 0:
+                                cost[current[0] - 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
+                                fringe = self.sorting(fringe, child1, cost)
+                                parent[current[0] - 1][[current[1]]] = 3
+                        if current[1] != n - 1 and maze_array[current[0]][current[1] + 1] != 1:
+                            child2.append([current[0], current[1] + 1])  # right cell
+                            if child2[0] not in visited and child2[0] not in fringe and cost [current[0]][
+                                [current[1] + 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][
+                                [current[1] + 1]] == 0:
+                                cost[current[0]][[current[1] + 1]] = cost[current[0]][[current[1]]] + 1
+                                fringe = self.sorting(fringe, child2, cost)
+                                parent[current[0]][[current[1] + 1]] = 2
+                        if current[0] != n - 1 and maze_array[current[0] + 1][current[1]] != 1:
+                            child3.append([current[0] + 1, current[1]])  # bottom cell
+                            if child3[0] not in visited and child3[0] not in fringe and cost[current[0] + 1][
+                                [current[1]]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0] + 1][
+                                [current[1]]] == 0:
+                                cost[current[0] + 1][[current[1]]] = cost[current[0]][[current[1]]] + 1
+                                fringe = self.sorting(fringe, child3, cost)
+                                parent[current[0] + 1][[current[1]]] = 1
+                        if current[1] != 0 and maze_array[current[0]][current[1] - 1] != 1:
+                            child4.append([current[0], current[1] - 1])  # left cell
+                            if child4[0] not in visited and child4[0] not in fringe and cost[current[0]][
+                                [current[1] - 1]] >= cost[current[0]][[current[1]]] + 1 or cost[current[0]][
+                                [current[1] - 1]] == 0:
+                                cost[current[0]][[current[1] - 1]] = cost[current[0]][[current[1]]] + 1
+                                fringe = self.sorting(fringe, child4, cost)
+                                parent[current[0]][[current[1] - 1]] = 4
+                    visited.append(current)
 
-                    tracker.clear()
-                    for i in range(0, len(temp_array)):  # updating tracker array
-                        tracker.append(temp_array[i])
-            if current == goal:
+            if current == goal:  # takes the "parent" array and tracks back to the start using the cell value
+                y = n - 1
+                x = n - 1
+                tracker.append([y, x])
+                while True:
+                    if parent[y][x] == 1:  # parent is top cell
+                        tracker.append([y - 1, x])
+                        y -= 1
+                    elif parent[y][x] == 2:  # parent is right cell
+                        tracker.append([y, x - 1])
+                        x -= 1
+                    elif parent[y][x] == 3:  # parent is bottom cell
+                        tracker.append([y + 1, x])
+                        y += 1
+                    elif parent[y][x] == 4:  # parent is left cell
+                        tracker.append([y, x + 1])
+                        x += 1
+                    if x == 0 and y == 0:  # when it reaches start it breaks out of the loop
+                        break
+
                 tracker.reverse()
-                self.a_star_nodes = len(tracker)
-                a_star_route = []
-                while tracker[0] != start:
-                    new_curr = tracker.pop(0)
-                    if not a_star_route:
-                        a_star_route.append(new_curr)
-                    # top
-                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] + 1 and new_curr[0] == a_star_route[len(a_star_route) - 1][0]:
-                        a_star_route.append(new_curr)
-                    # right
-                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] and new_curr[0] == a_star_route[len(a_star_route) - 1][0] + 1:
-                        a_star_route.append(new_curr)
-                    # bottom
-                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] - 1 and new_curr[0] == a_star_route[len(a_star_route) - 1][0]:
-                        a_star_route.append(new_curr)
-                    # left
-                    elif new_curr[1] == a_star_route[len(a_star_route) - 1][1] and new_curr[0] == a_star_route[len(a_star_route) - 1][0] - 1:
-                        a_star_route.append(new_curr)
 
-                a_star_route.append(start)
-                a_star_route.reverse()
-                print(a_star_route)
-                self.draw_path(tracker)
+                self.draw_path(tracker)  # draws the path
                 return True
 
-        print("2d array sucks")
         return False
 
     # check if the bounds are valid for the given maze
