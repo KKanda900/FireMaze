@@ -143,75 +143,65 @@ class MazeGUI:
         else:
             return False
 
-    def generate_fire_maze1(self, probability, bln):
+    def generate_fire_maze1(self, probability, bln):  # bln is to check if it's the first fire
         q = probability
-        fire_maze = self.tracking_obstacles
-        # print("Hello fire maze",fire_maze)
-        fire_array = self.fire_array
-        fire_array_copy = numpy.zeros((len(fire_maze), len(fire_maze)))
+        fire_maze = self.tracking_obstacles  # the actual maze
+        fire_array = self.fire_array  # array that keeps track of fire only in the maze
+        fire_array_copy = numpy.zeros((len(fire_maze), len(fire_maze)))  # a copy of the fire_array to keep track of old fires, so the new ones are not counted when calculating probabilities
         for x in range(0, len(fire_maze)):
             for y in range(0, len(fire_maze)):
                 fire_array_copy[x][y] = fire_array[x][y]
-        # print("hello fire array",self.fire_array)
-        if bln:
-            print("wtf")
+        if bln:  # if it's the first fire then we chose a stop randomly
             while bln:  # for the first one does a random fire
-                y = random.randint(0, len(fire_maze) - 1)
-                x = random.randint(0, len(fire_maze) - 1)
+                y = random.randint(0, len(fire_maze) - 1)  # random x spot for fire
+                x = random.randint(0, len(fire_maze) - 1)  # random y spot for fire
                 if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (
-                        x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
+                        x != len(fire_maze) - 1 and y != len(fire_maze) - 1):  # only generate fire if there is no obstacle there and it's not the start or goal
                     fire_array[x][y] = 2
                     self.tracking_obstacles[x][y] = 2
-                    return self.tracking_obstacles
+                    return self.tracking_obstacles  # return the maze array
         else:
-            print("wtfpart2")
-            for i in range(0, len(self.tracking_obstacles)):
-                for j in range(0, len(self.tracking_obstacles)):
+            for i in range(0, len(self.tracking_obstacles)):  # if it's not the first time then we traverse through every cell
+                for j in range(0, len(self.tracking_obstacles)):  # for each cell we calculate the probability fo it catching fire depending on how many of it's neighbours are on fire
                     fire = 0
                     if fire_maze[i][j] != 1 and fire_array[i][j] != 2:
-                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i + 1][j] == 2:
-                            fire += 1
+                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i + 1][j] == 2:  # we use the copy of fire array to make sure a new fire is not counted in the calculations
+                            fire += 1  # bottom cell
                         if fire_array_copy[i - 1][j] == 2 and i != 0:
-                            fire += 1
+                            fire += 1  # top cell
                         if j != len(self.tracking_obstacles) - 1 and fire_array_copy[i][j + 1] == 2:
-                            fire += 1
+                            fire += 1  # right cell
                         if fire_array_copy[i][j - 1] == 2 and j != 0:
-                            fire += 1
-                        prob = 1 - ((1 - q) ** fire)
-                        if fire > 0 and random.random() <= prob and prob > 0:
-                            fire_array[i][j] = 2
-                            self.tracking_obstacles[i][j] = 2
-                            # print("five:",self.tracking_obstacles)
+                            fire += 1  # left cell
+                        prob = 1 - ((1 - q) ** fire)  # calculate the probability with given formula
+                        if fire > 0 and random.random() <= prob and prob > 0:  # if it catches on fire
+                            fire_array[i][j] = 2  # update the fire tracking array
+                            self.tracking_obstacles[i][j] = 2  # update the actual maze array
 
-        print(self.tracking_obstacles)
         return self.tracking_obstacles
 
     def strategy1(self):
 
-        self.generate_fire_maze1(float(sys.argv[4]), True)
+        self.generate_fire_maze1(float(sys.argv[4]), True)  # ignite the first fire in the maze
         time.sleep(1.5)
-        path = self.bfs_tree_search()
-        path.reverse()
+        path = self.bfs_tree_search()  # run a bfs search for the path from start to goal
+        path.reverse()  # path is reversed for it to be used in the for loop
         dimension = len(self.tracking_obstacles) - 1
         x = len(path)
-        curr = path.pop()
-        print(path)
-        if not path:
+        curr = path.pop()  # pop the start cell from the path array
+        if not path:  # if there is no path return false
             return False
 
-        for i in range(0, x):
-            print(i)
-            self.draw_path(curr)
-            curr = path.pop()
-            if self.tracking_obstacles[curr[0]][curr[1]] == 2:
+        for i in range(0, x):  # the loop is run for every step of the path
+            self.draw_path(curr)  # draw the current step on the maze
+            curr = path.pop()  # replace the current cell with next step in path
+            if self.tracking_obstacles[curr[0]][curr[1]] == 2:  # is the next step agent is going to take is already on fire we stop the code
                 print("agent is toast")
                 return False
-            print(curr)
-            if curr[0] == dimension and curr[1] == dimension:
+            if curr[0] == dimension and curr[1] == dimension:  # if current is at the goal cell then we return true and agent has reached the goal
                 return True
-            self.generate_fire_maze1(float(sys.argv[4]), False)
-            time.sleep(.5)
-        print("Code is broken")
+            self.generate_fire_maze1(float(sys.argv[4]), False)  # update the fire in maze
+            time.sleep(.5)  # makes it easier to visualize how the fire and agent are moving in the maze
 
     def bfs_tree_search(self):
         # print('start bfs')
