@@ -1,4 +1,7 @@
 import sys, random, numpy, math, time, threading
+from collections import deque
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class Maze:
@@ -34,53 +37,97 @@ class Maze:
                     obstacles -= 1
 
         return self.tracking_array
+
     def dfs(self, beginning, goal):
+
+        #checks whether either the goal or beginning points are blocked, if so return false
         if self.tracking_array[int(beginning[0])][int(beginning[1])]==1 or self.tracking_array[goal[0]][goal[1]]==1:
             return False 
+
+        #If they are the same point then return true 
+        if beginning==goal:
+            return True
+
+        #If not false, then add the beginning point to the fringe
         self.fringe.append((int(beginning[0]) ,int(beginning[1])))
+
+        #loops through the fringe
         while len(self.fringe) > 0:
+
+            #sets current to the topmost element of the fringe
             current = self.fringe.pop()
-            #print(current)
+
+            #Terminating case in which current is equal to the goal
             if current == (goal[0],goal[1]):
                 return True
+
+            #Current not equal to goal
             else:
+                #current has not been explored yet (haven't added surrounding valid children to the fringe)
                 if current not in self.visited:
+                    #All columns other than the first column
                     if current[1]>0:
+
+                        #Checks whether left child is open and that the left child has not been in the fringe and visited list yet
                         if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:
+
+                            #If the left child is open and is not in the fringe and is not in the visited, add the left child to the fringe
                             self.fringe.append((current[0],current[1]-1))
+
+                        #Checks whether the row is not the last row and also that the bottom child is open and that the bottom child has not been in the fringe and visited list yet
                         if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
+                            
+                            #If the bottom child is open and is not in the fringe and is not in the visited, add the bottom child to the fringe
                             self.fringe.append((current[0]+1,current[1]))
+
+                        #Checks whether the column is not the last column and that the right child is open and that the right child has not been in the fringe and visited list yet
                         if current[1]!=self.dim-1 and self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
+                            
+                            #If the right child is open and is not in the fringe and is not in the visited, add the right child to the fringe
                             self.fringe.append((current[0],current[1]+1))
-                        if current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+
+                        #Checks whether the row is not the first row and that the top child is open and that the top child has not been in the fringe and visited list yet
+                        if current[0]!=0 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+                            
+                            #If the top child is open and is not in the fringe and is not in the visited, add the top child to the fringe
                             self.fringe.append((current[0]-1,current[1]))
+
+                    #The first column
                     else:
+                        #Checks whether the row is not the last row and also that the bottom child is open and that the bottom child has not been in the fringe and visited list yet
                         if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
+                            
+                            #If the bottom child is open and is not in the fringe and is not in the visited, add the bottom child to the fringe
                             self.fringe.append((current[0]+1,current[1]))
+
+                        #Checks that that the right child is open and that the right child has not been in the fringe and visited list yet
                         if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
+                            
+                            #If the right child is open and is not in the fringe and is not in the visited, add the right child to the fringe
                             self.fringe.append((current[0],current[1]+1))
-                        if current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+
+                        #Checks whether the row is not the first row and that the top child is open and that the top child has not been in the fringe and visited list yet
+                        if current[0]!=0 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+                            
+                            #If the top child is open and is not in the fringe and is not in the visited, add the top child to the fringe
                             self.fringe.append((current[0]-1,current[1]))
-                        
+
+                #Adds the current node to visited (all valid children have been added to the fringe)  
                 self.visited.append(current)
 
+        #In the case that the fringe is empty and you could not find a path
         return False        
-
 def largest_dfs():
     Run_Tests = Maze()
     Running = True
     start_time = 0
     end_time = 0
+    number=int(sys.argv[1])
+    one=(random.randint(0,number-1),random.randint(0,number-1))
+    two=(random.randint(0,number-1),random.randint(0,number-1))
+    maze = Run_Tests.build_maze(number, 0.3)
     while Running:
         start_time = time.time()
-        maze = Run_Tests.build_maze(20, 0.3)
-        print(maze)
-        """ one=(0,0)
-        two=(199,199) """
-        one=(int(random.uniform(0,20)),int(random.uniform(0,20)))
-        two=(int(random.uniform(0,20)),int(random.uniform(0,20)))
-        print(one)
-        print(two)
         bfs = Run_Tests.dfs(one,two)
         print(bfs)
         if bfs != [] or bfs == []:
