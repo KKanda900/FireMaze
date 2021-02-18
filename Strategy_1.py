@@ -189,9 +189,10 @@ class MazeGUI:
         path.reverse()  # path is reversed for it to be used in the for loop
         dimension = len(self.tracking_obstacles) - 1
         x = len(path)
-        curr = path.pop()  # pop the start cell from the path array
+
         if not path:  # if there is no path return false
             return False
+        curr = path.pop()  # pop the start cell from the path array
 
         for i in range(0, x):  # the loop is run for every step of the path
             self.draw_path(curr)  # draw the current step on the maze
@@ -335,7 +336,7 @@ class MazeGUI:
 def start():
 
     # command line arguments
-    dim = int(sys.argv[1]) 
+    dim = int(sys.argv[1])
     probability = float(sys.argv[2])
 
     # inital conditions to start pygame
