@@ -96,6 +96,7 @@ class MazeGUI:
                     fire_array[x][y] = 2 # 2 indicates there is fire placed
                     self.tracking_obstacles[x][y] = 2 # this is so we can take account for the maze globally
                     self.fire_index += 1 # increase this so we dont choose another random spot
+                    self.fire_maze[x][y] = FireNode(2, 1.0) # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
                     return self.tracking_obstacles
         else:
             # now that we choose one spot on the maze to catch on fire, the fire can move only one spot and the chance is based on the neighbors that are on fire
@@ -116,19 +117,11 @@ class MazeGUI:
                             fire_array[i][j] = 2 # track it locally
                             self.tracking_obstacles[i][j] = 2 # track it globally
                             self.fire_maze[i][j] = FireNode(2, 1.0) # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
+                        else:
+                            # indicate the cell has a certain chance of catching on fire if its not based on the variable prob
+                            self.fire_maze[i][j] = FireNode(0, prob)
                     elif fire_maze[i][j] == 1: # there is an obstacle
                         self.fire_maze[i][j] = FireNode(1, 0.0) # obstacles would be indicated with 1 and have no chance of catching on fire
-                    else:
-                        if i != len(self.tracking_obstacles) - 1 and fire_array_copy[i + 1][j] == 2: # check the below neighbor
-                            fire += 1
-                        if fire_array_copy[i - 1][j] == 2 and i != 0: # check the up neighbor
-                            fire += 1
-                        if j != len(self.tracking_obstacles) - 1 and fire_array_copy[i][j + 1] == 2: # check the right neighbor
-                            fire += 1
-                        if fire_array_copy[i][j - 1] == 2 and j != 0: # check the left neighbor
-                            fire += 1
-                        prob = 1 - ((1 - q) ** fire) # calculate the probability of a cell catching on fire
-                        self.fire_maze[i][j] = FireNode(0, prob) # indicate the cell has a certain chance of catching on fire if its not based on the variable prob
 
         return self.tracking_obstacles
 
@@ -221,7 +214,7 @@ class MazeGUI:
         return []
 
     # this is the name of strategy 3: escape the fire
-    def escape_the_fire(self):
+    def etf(self):
         ALIVE = True # indicates if the agent is alive which it will be when it starts
         DEAD = False # indicates if the agent is dead which it wont be in the start
         start = (0, 0) # we want to start in the beginning of the maze
