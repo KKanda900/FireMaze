@@ -1,3 +1,6 @@
+import sys, random, numpy, math, time, threading
+
+
 class Maze:
     x, y = 0, 0
     cell_size = 3
@@ -8,6 +11,29 @@ class Maze:
     visited = []
     probability=0
 
+    def build_maze(self, size, probability):
+        self.x = 0 
+        self.y = 0
+        self.dim = size
+        self.probability=probability
+        obstacle_num = 0  # See if the amount of obstacles required are 0 or not
+        obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles
+        self.tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
+        dim_array = list(range(0, size))
+        while obstacles != 0:
+            i = random.choice(dim_array)
+            j = random.choice(dim_array)
+            if i == 0 and j == 0:  # this is what we will define as a start node with yellow
+                pass
+            elif i == size - 1 and j == size - 1:
+                pass
+            else:
+                arr = [0, 1]  # these will represent random choices
+                if random.choice(arr) == 0 and obstacles != 0 and self.tracking_array[i][j] == 0:
+                    self.tracking_array[i][j] = 1
+                    obstacles -= 1
+
+        return self.tracking_array
     def dfs(self, beginning, goal):
         if self.tracking_array[int(beginning[0])][int(beginning[1])]==1 or self.tracking_array[goal[0]][goal[1]]==1:
             return False
@@ -58,7 +84,6 @@ class Maze:
                             if self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:    
                                 self.fringe.append((current[0]-1, current[1]))
                     self.visited.append(current)
-                    
         return False        
 
 def largest_dfs():
