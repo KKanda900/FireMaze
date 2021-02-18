@@ -281,7 +281,7 @@ class Maze:
 
 def run_tests():
     Run_Tests = Maze()
-    tests = [(20, 0.1), (20, 0.1)]
+    tests = [(500, 0.1), (500, 0.2), (500, 0.3), (500, 0.4), (500, 0.5)]
 
     while len(tests) != 0:
         print("ITERATION")
@@ -306,6 +306,42 @@ def run_tests():
     plt.savefig('plot.png')
     plt.show()
     exit(0)
+    """ Run_Tests = Maze()
+    tests = [(100, 0.1), (100, 0.2), (100, 0.3), (100, 0.4), (100, 0.5)]
+
+    while len(tests) != 0:
+        q = 0
+        print("ITERATION")
+        curr_test = tests.pop(0)
+        maze = Run_Tests.build_maze(curr_test[0], curr_test[1])
+        dimensions = curr_test[0]
+        probability = curr_test[1]
+        start_x = int(random.uniform(0, dimensions-1))
+        start_y = int(random.uniform(0, dimensions-1))
+        end_x = int(random.uniform(0, dimensions-1))
+        end_y = int(random.uniform(0, dimensions-1))
+        name = Run_Tests.dfs((start_x, start_y), (end_x, end_y))
+        f = open("Density_vs_Success.txt", "a")
+        if(name == True):
+            q = 1
+        elif (name == False):
+            q = 0
+        print(q)
+        f.write(str(curr_test[1]) + " " + str(q) + '\n')
+
+    plot = pd.read_csv('Density_vs_Success.txt', sep='\s+', header=None)
+    plot = pd.DataFrame(plot)
+    x = plot[0]
+    y1 = plot[1]
+    #print("Values",x,y1)
+    plt.plot(x, y1, label='Density and Percentage Of Success')
+    plt.xlabel('Density')
+    plt.ylabel('Percentage')
+    plt.title('Obstacle Desnity vs Probability Of Success')
+    plt.legend()
+    plt.savefig('plot.png')
+    plt.show()
+    exit(0) """
 
 def largest_bfs():
     Run_Tests = Maze()

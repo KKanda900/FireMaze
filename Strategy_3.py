@@ -24,7 +24,7 @@ class MazeGUI:
     dim = 10
     tracking_obstacles = []
     display = None
-    fire_array = numpy.zeros((dim, dim))
+    fire_array = None
     fire_maze = None
     fire_index = 0
 
@@ -32,6 +32,7 @@ class MazeGUI:
     def build_maze(self, screen, size, probability):
         self.dim = size
         self.display = screen
+        self.fire_array = numpy.zeros((self.dim, self.dim))
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
         obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles
         tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count

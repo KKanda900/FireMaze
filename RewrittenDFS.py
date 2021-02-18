@@ -73,11 +73,12 @@ def largest_dfs():
     end_time = 0
     while Running:
         start_time = time.time()
-        maze = Run_Tests.build_maze(200, 0.3)
-        one=(0,0)
-        two=(199,199)
-        #one=(int(random.uniform(0,400)),int(random.uniform(0,400)))
-        #two=(int(random.uniform(0,400)),int(random.uniform(0,400)))
+        maze = Run_Tests.build_maze(20, 0.3)
+        print(maze)
+        """ one=(0,0)
+        two=(199,199) """
+        one=(int(random.uniform(0,20)),int(random.uniform(0,20)))
+        two=(int(random.uniform(0,20)),int(random.uniform(0,20)))
         print(one)
         print(two)
         bfs = Run_Tests.dfs(one,two)
