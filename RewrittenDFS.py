@@ -36,54 +36,34 @@ class Maze:
         return self.tracking_array
     def dfs(self, beginning, goal):
         if self.tracking_array[int(beginning[0])][int(beginning[1])]==1 or self.tracking_array[goal[0]][goal[1]]==1:
-            return False
+            return False 
         self.fringe.append((int(beginning[0]) ,int(beginning[1])))
         while len(self.fringe) > 0:
             current = self.fringe.pop()
+            #print(current)
             if current == (goal[0],goal[1]):
                 return True
             else:
                 if current not in self.visited:
-                    if current==(0,0) or current==(0,self.dim-1) or current==(self.dim-1,0) or current==(self.dim-1,self.dim-1):
-                        if current[1]==0:
-                            if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))
-                            elif current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1]))
-                        else:
-                            if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:    
-                                self.fringe.append((current[0], current[1]-1))
-                            if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))  
-                            elif current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1])) 
+                    if current[1]>0:
+                        if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:
+                            self.fringe.append((current[0],current[1]-1))
+                        if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
+                            self.fringe.append((current[0]+1,current[1]))
+                        if current[1]!=self.dim-1 and self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
+                            self.fringe.append((current[0],current[1]+1))
+                        if current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+                            self.fringe.append((current[0]-1,current[1]))
                     else:
-                        if current[0]==0:
-                            if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:    
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:    
-                                self.fringe.append((current[0]+1, current[1]))
-                        elif current[0]==self.dim-1:
-                            if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:    
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:    
-                                self.fringe.append((current[0]-1, current[1]))
-                        else:
-                            if current[1]+1<self.dim and self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if current[1]-1>=0 and self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:    
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:    
-                                self.fringe.append((current[0]+1, current[1]))
-                            if self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:    
-                                self.fringe.append((current[0]-1, current[1]))
-                    self.visited.append(current)
+                        if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
+                            self.fringe.append((current[0]+1,current[1]))
+                        if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
+                            self.fringe.append((current[0],current[1]+1))
+                        if current[0]==self.dim-1 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
+                            self.fringe.append((current[0]-1,current[1]))
+                        
+                self.visited.append(current)
+
         return False        
 
 def largest_dfs():
@@ -93,9 +73,11 @@ def largest_dfs():
     end_time = 0
     while Running:
         start_time = time.time()
-        maze = Run_Tests.build_maze(300, 0.3)
-        one=(int(random.uniform(0,300)),int(random.uniform(0,300)))
-        two=(int(random.uniform(0,300)),int(random.uniform(0,300)))
+        maze = Run_Tests.build_maze(200, 0.3)
+        one=(0,0)
+        two=(199,199)
+        #one=(int(random.uniform(0,400)),int(random.uniform(0,400)))
+        #two=(int(random.uniform(0,400)),int(random.uniform(0,400)))
         print(one)
         print(two)
         bfs = Run_Tests.dfs(one,two)
