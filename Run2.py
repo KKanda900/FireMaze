@@ -225,28 +225,34 @@ def run_tests():
     plt.show()
     exit(0)
 
+
 def largest_dfs():
     Run_Tests = Maze()
-
     Running = True
     start_time = 0
     end_time = 0
     while Running:
         start_time = time.time()
-        maze = Run_Tests.build_maze(2000, 0.3)
-        bfs = Run_Tests.dfs((0,0), (9,9))
+        maze = Run_Tests.build_maze(300, 0.3)
+        one = (int(random.uniform(0, 300)), int(random.uniform(0, 300)))
+        two = (int(random.uniform(0, 300)), int(random.uniform(0, 300)))
+        print(one)
+        print(two)
+        bfs = Run_Tests.dfs(one, two)
+        print(bfs)
         if bfs != [] or bfs == []:
             end_time = time.time()
             Running = False
             break
-    
+
     elapsed_time = end_time-start_time
 
     if elapsed_time <= 60.0:
+        print(elapsed_time)
         return elapsed_time
-    
+    print(elapsed_time)
     return elapsed_time
 
 if __name__ == "__main__":
-    print(largest_dfs())
+    largest_dfs()
 
