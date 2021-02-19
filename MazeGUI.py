@@ -18,7 +18,7 @@ RED = (255,0,0)
 
 class MazeGUI:
     x, y = 0, 0
-    cell_size = 10
+    cell_size = 5
     dim = 10
     tracking_obstacles = []
     tracking_array = []
@@ -105,8 +105,8 @@ class MazeGUI:
                     obstacles -= 1
 
         for k in range(0, size):
-            self.x = 10
-            self.y += 10
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == start[0] and b == start[1]:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
@@ -120,16 +120,17 @@ class MazeGUI:
                 else:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 10
+                self.x += 5
+        pygame.display.update()
 
         self.tracking_obstacles = tracking_array
         self.tracking_array = tracking_array
         return self.tracking_obstacles
 
-    def distance_calculator(self, start, end):  # calculates the eucledian distance between current point and goal
-        x_diff = abs(start[0] - end[0])
-        y_diff = abs(start[1] - end[1])
+    def distance_calculator(self, start):  # calculates the eucledian distance between current point and goal
+        end = len(self.tracking_obstacles) - 1
+        x_diff = abs(start[0] - end)
+        y_diff = abs(start[1] - end)
         return math.sqrt(x_diff**2 + y_diff**2)
 
     def sorting(self, fringe, child, cost):  # puts the new child in the priority queue depending on it's cost to get there and distance to goal
@@ -142,8 +143,7 @@ class MazeGUI:
 
         for i in range(0, len(fringe)):
             curr_child_dist = self.distance_calculator(fringe[i])
-            if child_dist + cost[child[0][0]][child[0][1]] <= curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and \
-                    child[0] not in return_array:
+            if child_dist + cost[child[0][0]][child[0][1]] <= curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and child[0] not in return_array:
                 return_array.append(child[0])
                 return_array.append(fringe[i])
                 i += 2
@@ -453,8 +453,8 @@ class MazeGUI:
         
         # same mechanism as in drawing the maze but now it just includes drawing the full path given by one of the algos used
         for k in range(0, size):
-            self.x = 10
-            self.y += 10
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -477,14 +477,14 @@ class MazeGUI:
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 10
+                self.x += 5
 
 # this is how we will start the MazeGUI visualization
 def start():
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((500, 500))
+    screen = pygame.display.set_mode((700, 700))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
