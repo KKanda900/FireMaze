@@ -1,4 +1,4 @@
-import pygame, sys, random, numpy, math, time, threading
+import pygame, sys, random, numpy, math, time
 from collections import deque
 import Strategy_1 as s1
 import Strategy2 as s2
@@ -39,13 +39,13 @@ class MazeGUI:
             j = random.choice(dim_array)
             if i == 0 and j == 0:  # this is what we will define as a start node with yellow
                 pass
-            elif i == size - 1 and j == size - 1:
+            elif i == size - 1 and j == size - 1: # ending node
                 pass
             else:
                 arr = [0, 1]  # these will represent random choices
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
-                    tracking_array[i][j] = 1
-                    obstacles -= 1
+                    tracking_array[i][j] = 1 # mark it as an obstacle
+                    obstacles -= 1 # decrement the amount of obstacles we have to place
 
         for k in range(0, size):
             self.x = 10

@@ -309,6 +309,8 @@ def running_tests():
             if result == True:
                 success += 1
             numTests-=1
+        numTests = 10
+        success = 0
         f = open("Strategy_3_Success_Rate.txt", "a")
         f.write(str(curr_test[2]) + " " + str(success/10) + "\n")
 
