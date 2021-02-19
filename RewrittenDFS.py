@@ -46,6 +46,8 @@ class Maze:
 
         #If they are the same point then return true 
         if beginning==goal:
+            self.fringe.clear
+            self.visited.clear
             return True
 
         #If not false, then add the beginning point to the fringe
@@ -68,55 +70,85 @@ class Maze:
                     #All columns other than the first column
                     if current[1]>0:
 
-                        #Checks whether left child is open and that the left child has not been in the fringe and visited list yet
+                        #Checks validity of left child
                         if self.tracking_array[current[0]][current[1]-1]==0 and (current[0],current[1]-1) not in self.fringe and (current[0],current[1]-1) not in self.visited:
+                            self.fringe.append((current[0],current[1]-1)) #left child is valid
 
-                            #If the left child is open and is not in the fringe and is not in the visited, add the left child to the fringe
-                            self.fringe.append((current[0],current[1]-1))
-
-                        #Checks whether the row is not the last row and also that the bottom child is open and that the bottom child has not been in the fringe and visited list yet
+                        #Checks whether the row is not the last row and also validity of bottom child
                         if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
-                            
-                            #If the bottom child is open and is not in the fringe and is not in the visited, add the bottom child to the fringe
-                            self.fringe.append((current[0]+1,current[1]))
+                            self.fringe.append((current[0]+1,current[1])) #bottom child is valid
 
-                        #Checks whether the column is not the last column and that the right child is open and that the right child has not been in the fringe and visited list yet
+                        #Checks whether the column is not the last column and validity of right child
                         if current[1]!=self.dim-1 and self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                            
-                            #If the right child is open and is not in the fringe and is not in the visited, add the right child to the fringe
-                            self.fringe.append((current[0],current[1]+1))
+                            self.fringe.append((current[0],current[1]+1)) #right child is valid
 
-                        #Checks whether the row is not the first row and that the top child is open and that the top child has not been in the fringe and visited list yet
+                        #Checks whether the row is not the first row and validity of top child
                         if current[0]!=0 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
-                            
-                            #If the top child is open and is not in the fringe and is not in the visited, add the top child to the fringe
-                            self.fringe.append((current[0]-1,current[1]))
+                            self.fringe.append((current[0]-1,current[1])) #top child is valid
 
                     #The first column
                     else:
-                        #Checks whether the row is not the last row and also that the bottom child is open and that the bottom child has not been in the fringe and visited list yet
+                        #Checks whether the row is not the last row and also validity of bottom child
                         if current[0]!=self.dim-1 and self.tracking_array[current[0]+1][current[1]]==0 and (current[0]+1,current[1]) not in self.fringe and (current[0]+1,current[1]) not in self.visited:
-                            
-                            #If the bottom child is open and is not in the fringe and is not in the visited, add the bottom child to the fringe
-                            self.fringe.append((current[0]+1,current[1]))
+                            self.fringe.append((current[0]+1,current[1])) #bottom child is valid
 
-                        #Checks that that the right child is open and that the right child has not been in the fringe and visited list yet
+                        #Checks validity of right child
                         if self.tracking_array[current[0]][current[1]+1]==0 and (current[0],current[1]+1) not in self.fringe and (current[0],current[1]+1) not in self.visited:
-                            
-                            #If the right child is open and is not in the fringe and is not in the visited, add the right child to the fringe
-                            self.fringe.append((current[0],current[1]+1))
+                            self.fringe.append((current[0],current[1]+1)) #right child is valid
 
-                        #Checks whether the row is not the first row and that the top child is open and that the top child has not been in the fringe and visited list yet
+                        #Checks whether the row is not the first row and validity of top child
                         if current[0]!=0 and self.tracking_array[current[0]-1][current[1]]==0 and (current[0]-1,current[1]) not in self.fringe and (current[0]-1,current[1]) not in self.visited:
-                            
-                            #If the top child is open and is not in the fringe and is not in the visited, add the top child to the fringe
-                            self.fringe.append((current[0]-1,current[1]))
+                            self.fringe.append((current[0]-1,current[1])) #top child is valid
 
-                #Adds the current node to visited (all valid children have been added to the fringe)  
-                self.visited.append(current)
-
+                #Adds the current node to visited (all valid children have been added to the fringe) 
+                self.visited.append(current) 
+        self.fringe.clear
+        self.visited.clear
         #In the case that the fringe is empty and you could not find a path
-        return False        
+        return False 
+
+def run_tests():
+    Run_Tests = Maze()
+    tests = [(300, 0.1), (300, 0.2), (300, 0.3), (300, 0.4), (300, 0.5)]
+
+    while len(tests) != 0:
+        q=0
+        print("ITERATION")
+        curr_test = tests.pop(0)
+        maze = Run_Tests.build_maze(curr_test[0], curr_test[1])
+        dimensions=curr_test[0]
+        probability=curr_test[1]
+        start_x=int(random.uniform(0,dimensions-1))
+        start_y=int(random.uniform(0,dimensions-1))
+        end_x=int(random.uniform(0,dimensions-1))
+        end_y=int(random.uniform(0,dimensions-1))
+        name=Run_Tests.dfs((start_x,start_y),(end_x,end_y))
+        f = open("Density_vs_Success.txt", "a")
+        if(name==True):
+            q=1
+        elif (name==False):
+            q=0
+        print(q)
+        f.write(str(curr_test[1]) + " " + str(q) + '\n')
+    plot = pd.read_csv('Density_vs_Success.txt', sep='\s+', header=None)
+    plot = pd.DataFrame(plot)
+    x = plot[0]
+    y1 = plot[1]
+    #print("Values",x,y1)
+    plt.plot(x, y1, label='Density and Percentage Of Success')
+    plt.xlabel('Density')
+    plt.ylabel('Percentage')
+    plt.title('Obstacle Density vs Probability Of Success')
+    plt.legend()
+    plt.savefig('plot.png')
+    plt.show()
+    exit(0)
+
+
+
+
+
+
 def largest_dfs():
     Run_Tests = Maze()
     Running = True
@@ -146,4 +178,4 @@ def largest_dfs():
 
 
 if __name__ == "__main__":
-    largest_dfs()
+    run_tests()
