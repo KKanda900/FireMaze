@@ -39,6 +39,7 @@ class Maze:
     fringe = []
     tracking_array = []
     visited = []
+    path_to_fire = False
 
     # this is where the logic to build the maze is based to create based on a certain obstacle density
     def build_maze(self, size, probability):
@@ -94,15 +95,14 @@ class Maze:
                 x = random.randint(0, len(fire_maze) - 1)
                 # if a spot is already not on fire and not the first or last cell make it on fire
                 if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
-                    pathResult = self.dfs((0,0), (x, y))
-                    if pathResult:
-                        fire_array[x][y] = 2  # 2 indicates there is fire placed
+                    fire_array[x][y] = 2  # 2 indicates there is fire placed
                     # this is so we can take account for the maze globally
-                        self.tracking_obstacles[x][y] = 2
-                        self.fire_index += 1  # increase this so we dont choose another random spot
+                    self.tracking_obstacles[x][y] = 2
+                    self.fire_index += 1  # increase this so we dont choose another random spot
                     # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
-                        self.fire_maze[x][y] = FireNode(2, 1.0)
-                        return True
+                    self.fire_maze[x][y] = FireNode(2, 1.0)
+                    self.path_to_fire = True
+                    return self.tracking_obstacles
         else:
             # now that we choose one spot on the maze to catch on fire, the fire can move only one spot and the chance is based on the neighbors that are on fire
             for i in range(0, len(self.tracking_obstacles)):
@@ -136,38 +136,82 @@ class Maze:
                         # obstacles would be indicated with 1 and have no chance of catching on fire
                         self.fire_maze[i][j] = FireNode(1, 0.0)
 
-        return True
+        return self.tracking_obstacles
 
     def dfs(self, beginning, goal):
-        if self.tracking_array[beginning[0]][beginning[1]] == 1 or self.tracking_array[goal[0]][goal[1]] == 1:
+
+        #checks whether either the goal or beginning points are blocked, if so return false
+        if self.tracking_array[int(beginning[0])][int(beginning[1])] == 1 or self.tracking_array[goal[0]][goal[1]] == 1:
             return False
-        self.fringe.append((beginning[0], beginning[1]))
+
+        #If they are the same point then return true
+        if beginning == goal:
+            self.fringe.clear
+            self.visited.clear
+            return True
+
+        #If not false, then add the beginning point to the fringe
+        self.fringe.append((int(beginning[0]), int(beginning[1])))
+
+        #loops through the fringe
         while len(self.fringe) > 0:
+
+            #sets current to the topmost element of the fringe
             current = self.fringe.pop()
-            #print(current)
+
+            #Terminating case in which current is equal to the goal
             if current == (goal[0], goal[1]):
                 return True
+
+            #Current not equal to goal
             else:
+                #current has not been explored yet (haven't added surrounding valid children to the fringe)
                 if current not in self.visited:
+                    #All columns other than the first column
                     if current[1] > 0:
+
+                        #Checks validity of left child
                         if self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
+                            # left child is valid
                             self.fringe.append((current[0], current[1]-1))
+
+                        #Checks whether the row is not the last row and also validity of bottom child
                         if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
+                            # bottom child is valid
                             self.fringe.append((current[0]+1, current[1]))
+
+                        #Checks whether the column is not the last column and validity of right child
                         if current[1] != self.dim-1 and self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
+                            # right child is valid
                             self.fringe.append((current[0], current[1]+1))
-                        if current[0] == self.dim-1 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+
+                        #Checks whether the row is not the first row and validity of top child
+                        if current[0] != 0 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+                            # top child is valid
                             self.fringe.append((current[0]-1, current[1]))
+
+                    #The first column
                     else:
+                        #Checks whether the row is not the last row and also validity of bottom child
                         if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
+                            # bottom child is valid
                             self.fringe.append((current[0]+1, current[1]))
+
+                        #Checks validity of right child
                         if self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
+                            # right child is valid
                             self.fringe.append((current[0], current[1]+1))
-                        if current[0] == self.dim-1 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+
+                        #Checks whether the row is not the first row and validity of top child
+                        if current[0] != 0 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+                            # top child is valid
                             self.fringe.append((current[0]-1, current[1]))
 
+                #Adds the current node to visited (all valid children have been added to the fringe)
                 self.visited.append(current)
-
+        self.fringe.clear
+        self.visited.clear
+        #In the case that the fringe is empty and you could not find a path
         return False
 
     # check if the bounds are valid for the given maze
@@ -269,11 +313,12 @@ class Maze:
         # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through
         while ALIVE:
             # generate the fire at a given rate based on the command line
-            flameRoute = self.generate_fire_maze(flammability)
-            if flameRoute == False:
+            self.generate_fire_maze(flammability)
+            if self.path_to_fire == False:
                 DEAD = True
                 ALIVE = False
                 break
+            self.path_to_fire = False
             # time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0:  # indicates the agent died
