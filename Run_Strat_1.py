@@ -105,8 +105,7 @@ class Maze:
                     # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
                         self.fire_maze[x][y] = FireNode(2, 1.0)
                         return True
-                    print("finding fire")
-                    print(x,y)
+
         else:
             # now that we choose one spot on the maze to catch on fire, the fire can move only one spot and the chance is based on the neighbors that are on fire
             for i in range(0, len(self.tracking_obstacles)):
@@ -445,19 +444,21 @@ def running_tests():
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
-        numTests = 2
+        numTests = 10
         success = 0
         print(len(tests))
         while numTests != 0:
+            print(numTests)
             Running_Tests = Maze()
             Running_Tests.build_maze(curr_test[0], curr_test[1])
-            result = Running_Tests.strategy1(curr_test[2])
-            if result == True:
-                success += 1
-            numTests -= 1
-            print(numTests)
-            f = open("Strategy_1_Success_Rate.txt", "a")
-            f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
+            path = Running_Tests.dfs([0,0], [99,99])
+            if path:
+                result = Running_Tests.strategy1(curr_test[2])
+                if result == True:
+                    success += 1
+                numTests -= 1
+        f = open("Strategy_1_Success_Rate.txt", "a")
+        f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
 
     plot = pd.read_csv('Strategy_1_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
