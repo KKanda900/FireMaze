@@ -21,17 +21,21 @@ class MazeGUI:
     cell_size = 10
     dim = 10
     tracking_obstacles = []
+    tracking_array = []
+    fringe = []
+    visited = []
     display = None
 
     # this is where the logic to build the maze is based to create based on a certain obstacle density
     def build_maze(self, screen, size, probability):
-        self.x = 0 # reset x upon creating the maze again
-        self.y = 0 # reset y upon creating the maze again
         self.dim = size
         self.display = screen
+        self.fire_array = numpy.zeros((self.dim, self.dim))
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
-        obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles
-        tracking_array = numpy.zeros((size, size))  # track where the obstacles are places so it doesn't double count
+        # if the maze area is 100 then there should be only 10 obstacles
+        obstacles = (size*size)*probability
+        # track where the obstacles are places so it doesn't double count
+        tracking_array = numpy.zeros((size, size))
         dim_array = list(range(0, size))
         # iterate based on the amount of obstacles that are left, when there are no obstacles left then draw the maze
         while obstacles != 0:
@@ -39,34 +43,40 @@ class MazeGUI:
             j = random.choice(dim_array)
             if i == 0 and j == 0:  # this is what we will define as a start node with yellow
                 pass
-            elif i == size - 1 and j == size - 1: # ending node
+            elif i == size - 1 and j == size - 1:
                 pass
             else:
                 arr = [0, 1]  # these will represent random choices
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
-                    tracking_array[i][j] = 1 # mark it as an obstacle
-                    obstacles -= 1 # decrement the amount of obstacles we have to place
+                    tracking_array[i][j] = 1
+                    obstacles -= 1
 
         for k in range(0, size):
-            self.x = 10
-            self.y += 10
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
                 elif k == size-1 and b == size-1:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
                 elif tracking_array[k][b] == 1:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
                 else:
-                    cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 10
 
+                self.x += 5
+        
+        pygame.display.update()
         self.tracking_obstacles = tracking_array
+        self.tracking_array = tracking_array
         return self.tracking_obstacles
     
     # this is for dfs only because it creates a path to start from and a path to end
@@ -76,12 +86,6 @@ class MazeGUI:
         self.y = 0 # reset y on creation
         self.dim = size
         self.display = screen
-
-        # lets create a tuple for the starting and ending positions
-        S = start.split(",") # start is a string input
-        G = ending.split(",") # ending is also a string input
-        S_T = (int(S[0]), int(S[1]))
-        G_T = (int(G[0]), int(G[1]))
         
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
         obstacles = (size*size)*probability  # if the maze area is 100 then there should be only 10 obstacles
@@ -104,10 +108,10 @@ class MazeGUI:
             self.x = 10
             self.y += 10
             for b in range(0, size):
-                if k == S_T[0] and b == S_T[1]:  # this is what we will define as a start node with yellow
+                if k == start[0] and b == start[1]:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
-                elif k == G_T[0] and b == G_T[1]:
+                elif k == ending[0] and b == ending[1]:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
                 elif tracking_array[k][b] == 1:
@@ -120,6 +124,7 @@ class MazeGUI:
                 self.x += 10
 
         self.tracking_obstacles = tracking_array
+        self.tracking_array = tracking_array
         return self.tracking_obstacles
 
     def distance_calculator(self, start, end):  # calculates the eucledian distance between current point and goal
@@ -356,56 +361,76 @@ class MazeGUI:
         return []
 
     def dfs(self, beginning, goal):
-        if self.tracking_array[beginning[0]][beginning[1]] == 1 or self.tracking_array[goal[0]][goal[1]] == 1:
+
+        #checks whether either the goal or beginning points are blocked, if so return false
+        if self.tracking_array[int(beginning[0])][int(beginning[1])] == 1 or self.tracking_array[goal[0]][goal[1]] == 1:
             return False
-        self.fringe.append(beginning[0], beginning[1])
+
+        #If they are the same point then return true
+        if beginning == goal:
+            return True
+
+        #If not false, then add the beginning point to the fringe
+        self.fringe.append((int(beginning[0]), int(beginning[1])))
+
+        #loops through the fringe
         while len(self.fringe) > 0:
+
+            #sets current to the topmost element of the fringe
             current = self.fringe.pop()
+
+            #Terminating case in which current is equal to the goal
             if current == (goal[0], goal[1]):
                 return True
+
+            #Current not equal to goal
             else:
+                #current has not been explored yet (haven't added surrounding valid children to the fringe)
                 if current not in self.visited:
-                    if current == (0, 0) or current == (0, self.dim-1) or current == (self.dim-1, 0) or current == (self.dim-1, self.dim-1):
-                        if current[1] == 0:
-                            if self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))
-                            elif current[0] == self.dim-1 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1]))
-                        else:
-                            if self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
-                                self.fringe.append((current[0], current[1]-1))
-                            if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))
-                            elif current[0] == self.dim-1 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1]))
+                    #All columns other than the first column
+                    if current[1] > 0:
+
+                        #Checks validity of left child
+                        if self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
+                            # left child is valid
+                            self.fringe.append((current[0], current[1]-1))
+
+                        #Checks whether the row is not the last row and also validity of bottom child
+                        if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
+                            # bottom child is valid
+                            self.fringe.append((current[0]+1, current[1]))
+
+                        #Checks whether the column is not the last column and validity of right child
+                        if current[1] != self.dim-1 and self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
+                            # right child is valid
+                            self.fringe.append((current[0], current[1]+1))
+
+                        #Checks whether the row is not the first row and validity of top child
+                        if current[0] != 0 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+                            # top child is valid
+                            self.fringe.append((current[0]-1, current[1]))
+
+                    #The first column
                     else:
-                        if current[0] == 0:
-                            if self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))
-                        elif current[0] == self.dim-1:
-                            if self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1]))
-                        else:
-                            if current[1]+1 < self.dim and self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
-                                self.fringe.append((current[0], current[1]+1))
-                            if current[1]-1 >= 0 and self.tracking_array[current[0]][current[1]-1] == 0 and (current[0], current[1]-1) not in self.fringe and (current[0], current[1]-1) not in self.visited:
-                                self.fringe.append((current[0], current[1]-1))
-                            if self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]+1, current[1]))
-                            if self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
-                                self.fringe.append((current[0]-1, current[1]))
-                    self.visited.append(current)
-        
+                        #Checks whether the row is not the last row and also validity of bottom child
+                        if current[0] != self.dim-1 and self.tracking_array[current[0]+1][current[1]] == 0 and (current[0]+1, current[1]) not in self.fringe and (current[0]+1, current[1]) not in self.visited:
+                            # bottom child is valid
+                            self.fringe.append((current[0]+1, current[1]))
+
+                        #Checks validity of right child
+                        if self.tracking_array[current[0]][current[1]+1] == 0 and (current[0], current[1]+1) not in self.fringe and (current[0], current[1]+1) not in self.visited:
+                            # right child is valid
+                            self.fringe.append((current[0], current[1]+1))
+
+                        #Checks whether the row is not the first row and validity of top child
+                        if current[0] != 0 and self.tracking_array[current[0]-1][current[1]] == 0 and (current[0]-1, current[1]) not in self.fringe and (current[0]-1, current[1]) not in self.visited:
+                            # top child is valid
+                            self.fringe.append((current[0]-1, current[1]))
+
+                #Adds the current node to visited (all valid children have been added to the fringe)
+                self.visited.append(current)
+                
+        #In the case that the fringe is empty and you could not find a path
         return False
     
     # this method draws the path given by bfs or a star
@@ -470,29 +495,27 @@ def start():
 
     # now based on the user's request we will run the specific algorithm if they want to run DFS, BFS, or A Star
     if sys.argv[3] == "bfs": # runs bfs
-        maze.build_maze(screen, float(sys.argv[1]), int(sys.argv[2])) # start off with building the maze
-        maze.bfs_tree_search()
+        maze.build_maze(screen, int(sys.argv[1]), float(sys.argv[2])) # start off with building the maze
+        maze.bfs_tree_search() # execute bfs
     elif sys.argv[3] == 'a_star': # runs a star
-        maze.build_maze(screen, float(sys.argv[1]), int(sys.argv[2])) # start off with building the maze
-        maze.a_star()
+        maze.build_maze(screen, int(sys.argv[1]), float(sys.argv[2])) # start off with building the maze
+        maze.a_star() # execute a star
     elif sys.argv[3] == 'dfs': # if the user command isn't bfs or a star, it will automatically run dfs
-        answer = input("Do you want to run DFS on this generated maze for any two points: type yes or no: ")
-        if answer.lower() == "yes":
-            beginning=input("Enter a start node in the form of x,y: ")
-            Position1 = beginning.split(",")
-            B_T = (int(Position1[0]), int(Position1[1]))
-            goal=input("Enter a final node in the form of x,y: ")
-            Position2 = goal.split(",")
-            E_T = (int(Position2[0]), int(Position2[1]))
-            maze.create_maze_dfs(screen, int(sys.argv[1]), float(sys.argv[2]), B_T, E_T)
-            print(maze.dfs(maze.tracking_obstacles,beginning,goal)) # prints true or false if there is a given path in the console
+        beginning=input("Enter a start node in the form of x,y: ")
+        Position1 = beginning.split(",")
+        B_T = (int(Position1[0]), int(Position1[1]))
+        goal=input("Enter a final node in the form of x,y: ")
+        Position2 = goal.split(",")
+        E_T = (int(Position2[0]), int(Position2[1]))
+        maze.create_maze_dfs(screen, int(sys.argv[1]), float(sys.argv[2]), B_T, E_T)
+        print(maze.dfs(B_T,E_T)) # prints true or false if there is a given path in the console
     
     # if we reach this point this means that the third argument is a strategy we are running s1, s2, or s3
-    if sys.argv[3] == 's1':
+    if sys.argv[3] == 's1': # run s1
         s1.start()
-    elif sys.argv[3] == 's2':
+    elif sys.argv[3] == 's2': # run s2
         s2.start()
-    else:
+    elif sys.argv[3] == 's3': # otherwise run s3
         s3.strategy_3()
 
     # pygame variables in order to create the visualization and to run pygame in general

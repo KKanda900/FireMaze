@@ -366,4 +366,13 @@ def largest_bfs():
     return elapsed_time
 
 if __name__ == "__main__":
-    print(run_tests())
+    plot = pd.read_csv('Strategy_4_Success_Rate.txt', sep='\s+', header=None)
+    plot = pd.DataFrame(plot)
+    x = plot[0]
+    y = plot[1]
+    plt.plot(x, y, label='Success vs Flammability')
+    plt.xlabel('Flammability')
+    plt.ylabel('Average Success')
+    plt.title('Average Success Rate vs Flammability at p = 0.3')
+    plt.legend()
+    plt.savefig('plot212.png')
