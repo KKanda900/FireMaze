@@ -8,6 +8,8 @@ from pygame_widgets import Button, TextBox
 from collections import deque, OrderedDict
 import threading
 import time
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Color Graphics used in the Maze Visualizer
 BLACK = (0, 0, 0)
@@ -15,37 +17,25 @@ YELLOW = (255, 255, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+
 current1 = 0
 dimensions = 0
 
-
-class Node:
-    position = ()
-    children = []
-    g = 0
-    h = 0
-    f = 0
-
-    def __init__(self, position):
-        self.position = position
-        children = []
-        g = 0
-        h = 0
-        f = 0
-
-
 class MazeGUI:
     x, y = 0, 0
-    cell_size = 20
+    cell_size = 5
     dim = 10
     tracking_obstacles = []
     display = None
     fire_array = None
+    fringe = []
+    visited = []
+    tracking_array = []
 
     def build_maze(self, screen, size, probability):
         self.dim = size
-        self.display = screen
         self.fire_array = numpy.zeros((self.dim, self.dim))
+        self.display = screen
         obstacle_num = 0  # See if the amount of obstacles required are 0 or not
         # if the maze area is 100 then there should be only 10 obstacles
         obstacles = (size*size)*probability
@@ -65,43 +55,21 @@ class MazeGUI:
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
                     tracking_array[i][j] = 1
                     obstacles -= 1
-
-        for k in range(0, size):
-            self.x = 20
-            self.y += 20
-            for b in range(0, size):
-                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size-1 and b == size-1:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell)
-                else:
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 20
-
+        self.tracking_array = tracking_array
         self.tracking_obstacles = tracking_array
         return self.tracking_obstacles
 
     def check_valid_bounds(self, i, j, pop_value, arr):
         i = pop_value[0] + i
         j = pop_value[1] + j
+        # checks whether i is valid and checks whether j is valid
         if i >= 0 and i < len(arr) and j >= 0 and j < len(arr):
             return True
         else:
             return False
 
-    def generate_fire_maze1(self, probability, bln):
-        q = probability
+    def generate_fire_maze1(self, screen, probability, bln):
+        q = probability  # flammability
         fire_maze = self.tracking_obstacles  # the actual maze
         fire_array = self.fire_array  # array that keeps track of fire only in the maze
         # a copy of the fire_array to keep track of old fires, so the new ones are not counted when calculating probabilities
@@ -115,8 +83,8 @@ class MazeGUI:
                 y = random.randint(0, len(fire_maze) - 1)
                 # random y spot for fire
                 x = random.randint(0, len(fire_maze) - 1)
-                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (
-                        x != len(fire_maze) - 1 and y != len(fire_maze) - 1):  # only generate fire if there is no obstacle there and it's not the start or goal
+                # only generate fire if there is no obstacle there and it's not the start or goal
+                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
                     fire_array[x][y] = 2
                     self.tracking_obstacles[x][y] = 2
                     return self.tracking_obstacles  # return the maze array
@@ -145,13 +113,13 @@ class MazeGUI:
                             self.tracking_obstacles[i][j] = 2
         self.x = 0
         self.y = 0
-        screen = self.display
         size = self.dim
+        screen = self.display
         tracking_array = self.tracking_obstacles
-
+        #draws the maze with fire spots
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -161,20 +129,21 @@ class MazeGUI:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
+                elif tracking_array[k][b] == 1:  # obstacle cell
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
-                elif fire_array[k][b] == 2:
+                elif fire_array[k][b] == 2:  # fire cell
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLUE, cell)
                 else:
-                    cell = pygame.Rect(
+                    cell = pygame.Rect(  # draws the actual square cell
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 5
+
         return self.tracking_obstacles
 
     def bfs_tree_search1(self, start, goal):
@@ -193,7 +162,6 @@ class MazeGUI:
 
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
-            #print(fringe)
             current = fringe.popleft()
             visited[current[0]][current[1]] = True
             if current == goal:
@@ -248,31 +216,35 @@ class MazeGUI:
                         path.append(current)
         return False
 
-    def strategy2(self):
+    def strategy2(self, prob):
         path1 = []
-        self.generate_fire_maze1(0.3, True)
-        time.sleep(1.5)
-        path = self.bfs_tree_search1(
-            (0, 0), (int(sys.argv[1])-1, int(sys.argv[1])-1))
+        # generating fire before 1st step
+        self.generate_fire_maze1(self.display, prob, True)
+        time.sleep(1)
+        # Path from upper left to bottom right
+        path = self.bfs_tree_search1((0, 0), (self.dim-1, self.dim-1))
         if path == False:
             return False
-        path1.append(path[0])
+        path1.append(path[0])  # Path exists adds 1st element of path to path1
         x = len(path1)
+        #Maintains the loop until a terminating case has been met
         while(x != 0):
-            self.generate_fire_maze1(0.3, False)
+            # Generates fire after each step
+            self.generate_fire_maze1(self.display, prob, False)
             time.sleep(1)
-            path1 = self.bfs_tree_search1(
-                path1[0], (int(sys.argv[1])-1, int(sys.argv[1])-1))
-            if path1 == False:
+            # generates and checks path from 1st element of path1 to bottom right
+            path1 = self.bfs_tree_search1(path1[0], (self.dim-1, self.dim-1))
+            if path1 == False:  # Terminating case (no path)
                 return False
             time.sleep(1)
-            path1 = self.bfs_tree_search1(
-                path1[1], (int(sys.argv[1])-1, int(sys.argv[1])-1))
-            if path1 == False:
+            # Takes a step forward and checks path from 1st element of new path1 to bottom right
+            path1 = self.bfs_tree_search1(path1[1], (self.dim-1, self.dim-1))
+            if path1 == False:  # Terminating case (no path)
                 return False
 
-            self.draw_path(path1[0])
-            if path1[0] == (int(sys.argv[1])-1, int(sys.argv[1])-1):
+            self.draw_path(path1[0])  # draws a step
+            # Terminating case (there exists a path)
+            if path1[0] == (self.dim-1, self.dim-1):
                 return True
 
     def draw_path(self, position):  # arr contains the coordinates of the path to draw
@@ -287,8 +259,8 @@ class MazeGUI:
         tracking_array[curr[0]][curr[1]] = 3
 
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -315,7 +287,7 @@ class MazeGUI:
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 5
 
 
 def start():
@@ -323,6 +295,7 @@ def start():
     # command line arguments
     dim = int(sys.argv[1])
     probability = float(sys.argv[2])
+    flammability = float(sys.argv[3])
 
     # inital conditions to start pygame
     pygame.init()
@@ -332,10 +305,9 @@ def start():
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont('Comic Sans MS', 30)
-
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
-    print(maze.strategy2())
+    print(maze.strategy2(flammability))
 
     running = True
 
@@ -352,4 +324,4 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+   start()
