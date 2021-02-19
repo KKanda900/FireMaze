@@ -14,7 +14,8 @@ dimensions = 0
 
 class MazeGUI:
     x, y = 0, 0
-    cell_size = 20
+    cell_size = 5
+
     dim = 10
     tracking_obstacles = []
     display = None
@@ -46,8 +47,10 @@ class MazeGUI:
                     obstacles -= 1
 
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+
+            self.y += 5
+
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
@@ -61,8 +64,9 @@ class MazeGUI:
                 else:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
-                self.x += 20
+                self.x += 5
+
+        pygame.display.update()
 
         self.tracking_obstacles = tracking_array
         return self.tracking_obstacles
@@ -235,8 +239,10 @@ class MazeGUI:
         tracking_array[position[0]][position[1]] = 3
 
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+
+            self.y += 5
+
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -263,7 +269,8 @@ class MazeGUI:
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 5
+
 
 def start():
 

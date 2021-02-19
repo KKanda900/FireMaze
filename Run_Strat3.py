@@ -312,7 +312,6 @@ class Maze:
     # this is the name of strategy 3: escape the fire
     def etf(self, flammability):
         ALIVE = True  # indicates if the agent is alive which it will be when it starts
-        DEAD = False  # indicates if the agent is dead which it wont be in the start
         start = (0, 0)  # we want to start in the beginning of the maze
         # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through
         while ALIVE:
@@ -321,7 +320,6 @@ class Maze:
             time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0:  # indicates agent has no path or is dead
-                DEAD = True
                 ALIVE = False
                 break
             # indicates the agent made it through
@@ -330,18 +328,15 @@ class Maze:
             # because we are drawing one path at a time make start the next position
             start = escape_route[1]
 
-        if ALIVE == True:  # success
-            return ALIVE
-        else:  # failure
-            return DEAD
+        return ALIVE
 
 
 def running_tests():
-    tests = [(100, 0.3, 0.5), (100, 0.3, 0.6)]
+    tests = [(100, 0.3, 0.1)]  # , (100, 0.3, 0.2), (100, 0.3, 0.3), (100, 0.3, 0.4), (100, 0.3, 0.5), (100, 0.3, 0.6)]
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
-        numTests = 2
+        numTests = 10
         success = 0
         print(len(tests))
         while numTests != 0:
@@ -355,7 +350,9 @@ def running_tests():
                     success += 1
                 numTests -= 1
         f = open("Strategy_4_Success_Rate.txt", "a")
-        f.write(str(curr_test[2]) + " " + str(success / 2) + "\n")
+        f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
+    f = open("Strategy_4_Success_Rate.txt", "a")
+    f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
 
     plot = pd.read_csv('Strategy_4_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
