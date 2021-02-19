@@ -209,8 +209,8 @@ class Maze:
 
                 #Adds the current node to visited (all valid children have been added to the fringe)
                 self.visited.append(current)
-        self.fringe.clear
-        self.visited.clear
+        self.fringe.clear()
+        self.visited.clear()
         #In the case that the fringe is empty and you could not find a path
         return False
 
@@ -314,12 +314,7 @@ class Maze:
         while ALIVE:
             # generate the fire at a given rate based on the command line
             self.generate_fire_maze(flammability)
-            if self.path_to_fire == False:
-                DEAD = True
-                ALIVE = False
-                break
-            self.path_to_fire = False
-            # time.sleep(1)  # for calculation
+            time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0:  # indicates the agent died
                 DEAD = True
