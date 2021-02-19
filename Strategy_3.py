@@ -216,7 +216,6 @@ class MazeGUI:
     # this is the name of strategy 3: escape the fire
     def etf(self):
         ALIVE = True # indicates if the agent is alive which it will be when it starts
-        DEAD = False # insdicates if the agent is dead which it wont be in the start
         start = (0, 0) # we want to start in the beginning of the maze
         # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through 
         while ALIVE:
@@ -224,7 +223,6 @@ class MazeGUI:
             #time.sleep(1) # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0: # indicates the agent died
-                print("fkc this")
                 ALIVE = False
                 break
             elif escape_route[0] == (self.dim-1, self.dim-1): # indicates the agent made it through
@@ -233,13 +231,7 @@ class MazeGUI:
             self.draw_path(escape_route[1])
             start = escape_route[1] # because we are drawing one path at a time make start the next position
             
-        if ALIVE: # success
-            print(ALIVE)
-            return ALIVE
-
-        else: # failure
-            print(DEAD)
-            return DEAD
+        return ALIVE
     
     # same drawing mechanism used to draw the static mazes except we indicate a single position which we draw in the maze instead of a full path
     def draw_path(self, position): # modified drawing function to go based on a single position
