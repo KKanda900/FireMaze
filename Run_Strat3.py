@@ -95,15 +95,14 @@ class Maze:
                 # if a spot is already not on fire and not the first or last cell make it on fire
                 if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
                     pathResult = self.dfs((0,0), (x, y))
-                    if pathResult == False:
-                        return False
-                    fire_array[x][y] = 2  # 2 indicates there is fire placed
+                    if pathResult:
+                        fire_array[x][y] = 2  # 2 indicates there is fire placed
                     # this is so we can take account for the maze globally
-                    self.tracking_obstacles[x][y] = 2
-                    self.fire_index += 1  # increase this so we dont choose another random spot
+                        self.tracking_obstacles[x][y] = 2
+                        self.fire_index += 1  # increase this so we dont choose another random spot
                     # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
-                    self.fire_maze[x][y] = FireNode(2, 1.0)
-                    return True
+                        self.fire_maze[x][y] = FireNode(2, 1.0)
+                        return True
         else:
             # now that we choose one spot on the maze to catch on fire, the fire can move only one spot and the chance is based on the neighbors that are on fire
             for i in range(0, len(self.tracking_obstacles)):
@@ -275,7 +274,7 @@ class Maze:
                 DEAD = True
                 ALIVE = False
                 break
-            time.sleep(1)  # for calculation
+            # time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0:  # indicates the agent died
                 DEAD = True
@@ -302,6 +301,9 @@ def running_tests():
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
+        numTests = 10
+        success = 0
+        print(len(tests))
         while numTests != 0:
             Running_Tests = Maze()
             Running_Tests.build_maze(curr_test[0], curr_test[1])
