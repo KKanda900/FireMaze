@@ -337,15 +337,11 @@ class Maze:
 
 
 def running_tests():
-    success = 0
-    numTests = 10
-
-    tests = [(100, 0.3, 0.1), (100, 0.3, 0.2),
-             (100, 0.3, 0.3), (100, 0.3, 0.4), (100, 0.3, 0.5), (100, 0.3, 0.6)]
+    tests = [(100, 0.3, 0.5), (100, 0.3, 0.6)]
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
-        numTests = 20
+        numTests = 2
         success = 0
         print(len(tests))
         while numTests != 0:
@@ -358,10 +354,10 @@ def running_tests():
                 if result == True:
                     success += 1
                 numTests -= 1
-        f = open("Strategy_1_Success_Rate.txt", "a")
-        f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
+        f = open("Strategy_4_Success_Rate.txt", "a")
+        f.write(str(curr_test[2]) + " " + str(success / 2) + "\n")
 
-    plot = pd.read_csv('Strategy_1_Success_Rate.txt', sep='\s+', header=None)
+    plot = pd.read_csv('Strategy_4_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
     x = plot[0]
     y = plot[1]
@@ -370,7 +366,7 @@ def running_tests():
     plt.ylabel('Average Success')
     plt.title('Average Success Rate vs Flammability at p = 0.3')
     plt.legend()
-    plt.savefig('plot214.png')
+    plt.savefig('plot211.png')
     plt.show()
 
 
