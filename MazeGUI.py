@@ -140,8 +140,7 @@ class MazeGUI:
         self.tracking_array = tracking_array
         return self.tracking_obstacles
 
-    # calculates the eucledian distance between current point and goal
-    def distance_calculator(self, start):
+    def distance_calculator(self, start):  # calculates the eucledian distance between current point and goal
         end = len(self.tracking_obstacles) - 1
         x_diff = abs(start[0] - end)
         y_diff = abs(start[1] - end)
