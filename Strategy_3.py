@@ -20,7 +20,7 @@ class FireNode:
 
 class MazeGUI:
     x, y = 0, 0
-    cell_size = 20
+    cell_size = 5
     dim = 10
     tracking_obstacles = []
     display = None
@@ -53,8 +53,8 @@ class MazeGUI:
                     obstacles -= 1
 
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
@@ -69,7 +69,7 @@ class MazeGUI:
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 5
 
         self.tracking_obstacles = tracking_array
         return self.tracking_obstacles
@@ -221,7 +221,7 @@ class MazeGUI:
         # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through 
         while ALIVE:
             self.generate_fire_maze(float(sys.argv[4])) # generate the fire at a given rate based on the command line 
-            time.sleep(1) # for calculation
+            #time.sleep(1) # for calculation
             escape_route = self.fire_route_search(start)
             if len(escape_route) == 0: # indicates the agent died
                 DEAD = True
@@ -234,10 +234,8 @@ class MazeGUI:
             start = escape_route[1] # because we are drawing one path at a time make start the next position
             
         if ALIVE == True: # success
-            exit()
             return ALIVE
         else: # failure
-            exit()
             return DEAD
     
     # same drawing mechanism used to draw the static mazes except we indicate a single position which we draw in the maze instead of a full path
@@ -257,8 +255,8 @@ class MazeGUI:
         
         # same premise as in build function except drawing the path now
         for k in range(0, size):
-            self.x = 20
-            self.y += 20
+            self.x = 5
+            self.y += 5
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -285,7 +283,7 @@ class MazeGUI:
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
-                self.x += 20
+                self.x += 5
 
 # this is where we will house the logic for strategy 3 visualization
 def strategy_3():
@@ -296,7 +294,7 @@ def strategy_3():
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 1000))
+    screen = pygame.display.set_mode((700, 700))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
