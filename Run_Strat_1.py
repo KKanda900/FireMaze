@@ -445,9 +445,9 @@ def running_tests():
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
-        numTests = 20
+        numTests = 10
         success = 0
-        print(len(tests))
+        print(len(tests), curr_test[2])
         while numTests != 0:
             print(numTests)
             Running_Tests = Maze()
@@ -460,6 +460,11 @@ def running_tests():
                 numTests -= 1
         f = open("Strategy_1_Success_Rate.txt", "a")
         f.write(str(curr_test[2]) + " " + str(success / 20) + "\n")
+<<<<<<< HEAD
+=======
+    f = open("Strategy_1_Success_Rate.txt", "a")
+    f.write(str(curr_test[2]) + " " + str(success / 20) + "\n")
+>>>>>>> 8805136daf5c690922de81aff975d927649b2a57
 
     plot = pd.read_csv('Strategy_1_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
