@@ -316,7 +316,7 @@ class Maze:
             self.generate_fire_maze(flammability)
             time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
-            if len(escape_route) == 0:  # indicates the agent died
+            if len(escape_route) == 0:  # indicates agent 
                 DEAD = True
                 ALIVE = False
                 break
