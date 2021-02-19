@@ -94,15 +94,19 @@ class Maze:
                 # get a radnom x index based on the size of the maze
                 x = random.randint(0, len(fire_maze) - 1)
                 # if a spot is already not on fire and not the first or last cell make it on fire
-                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
-                    fire_array[x][y] = 2  # 2 indicates there is fire placed
+                if fire_maze[x][y] != 2 and fire_maze[x][y] != 1 and (x != 0 and y != 0) and (
+                        x != len(fire_maze) - 1 and y != len(fire_maze) - 1):
+                    pathResult = self.dfs((0, 0), (x, y))
+                    if pathResult:
+                        # 2 indicates there is fire placed
+                        fire_array[x][y] = 2
                     # this is so we can take account for the maze globally
-                    self.tracking_obstacles[x][y] = 2
-                    self.fire_index += 1  # increase this so we dont choose another random spot
+                        self.tracking_obstacles[x][y] = 2
+                        self.fire_index += 1  # increase this so we dont choose another random spot
                     # Fire Node is 2 and 1 (100%) of catching on fire because its on fire already
-                    self.fire_maze[x][y] = FireNode(2, 1.0)
-                    self.path_to_fire = True
-                    return self.tracking_obstacles
+                        self.fire_maze[x][y] = FireNode(2, 1.0)
+                        return True
+
         else:
             # now that we choose one spot on the maze to catch on fire, the fire can move only one spot and the chance is based on the neighbors that are on fire
             for i in range(0, len(self.tracking_obstacles)):
@@ -136,7 +140,7 @@ class Maze:
                         # obstacles would be indicated with 1 and have no chance of catching on fire
                         self.fire_maze[i][j] = FireNode(1, 0.0)
 
-        return self.tracking_obstacles
+        return True
 
     def dfs(self, beginning, goal):
 
@@ -316,7 +320,7 @@ class Maze:
             self.generate_fire_maze(flammability)
             time.sleep(1)  # for calculation
             escape_route = self.fire_route_search(start)
-            if len(escape_route) == 0:  # indicates agent 
+            if len(escape_route) == 0:  # indicates agent has no path or is dead
                 DEAD = True
                 ALIVE = False
                 break
@@ -335,28 +339,29 @@ class Maze:
 def running_tests():
     success = 0
     numTests = 10
-    
+
     tests = [(100, 0.3, 0.1), (100, 0.3, 0.2),
              (100, 0.3, 0.3), (100, 0.3, 0.4), (100, 0.3, 0.5), (100, 0.3, 0.6)]
 
     while len(tests) != 0:
         curr_test = tests.pop(0)
-        numTests = 10
+        numTests = 20
         success = 0
         print(len(tests))
         while numTests != 0:
+            print(numTests)
             Running_Tests = Maze()
             Running_Tests.build_maze(curr_test[0], curr_test[1])
-            result = Running_Tests.etf(curr_test[2])
-            if result == True:
-                success += 1
-            numTests-=1
-        numTests = 10
-        success = 0
-        f = open("Strategy_3_Success_Rate.txt", "a")
-        f.write(str(curr_test[2]) + " " + str(success/10) + "\n")
+            path = Running_Tests.dfs([0, 0], [99, 99])
+            if path:
+                result = Running_Tests.etf(curr_test[2])
+                if result == True:
+                    success += 1
+                numTests -= 1
+        f = open("Strategy_1_Success_Rate.txt", "a")
+        f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
 
-    plot = pd.read_csv('Strategy_3_Success_Rate.txt', sep='\s+', header=None)
+    plot = pd.read_csv('Strategy_1_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)
     x = plot[0]
     y = plot[1]
