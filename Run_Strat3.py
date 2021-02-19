@@ -341,7 +341,7 @@ def parallel_tests(curr_test):
     f = open("Strategy_4_Success_Rate.txt", "a")
     f.write(str(curr_test[2]) + " " + str(success/20) + "\n")
 
-def running_tests():
+def running_tests1():
     tests = [(100, 0.3, 0.1), (100, 0.3, 0.2), (100, 0.3, 0.3), (100, 0.3, 0.4), (100, 0.3, 0.5), (100, 0.3, 0.6)]
 
     x = threading.Thread(target=parallel_tests, args=(tests[0],))
@@ -363,6 +363,29 @@ def running_tests():
     a.join() 
     b.join()
     c.join()        
+
+def running_tests():
+    tests = [(100, 0.3, 0.1)]  # , (100, 0.3, 0.2), (100, 0.3, 0.3), (100, 0.3, 0.4), (100, 0.3, 0.5), (100, 0.3, 0.6)]
+
+    while len(tests) != 0:
+        curr_test = tests.pop(0)
+        numTests = 10
+        success = 0
+        print(len(tests))
+        while numTests != 0:
+            print(numTests)
+            Running_Tests = Maze()
+            Running_Tests.build_maze(curr_test[0], curr_test[1])
+            path = Running_Tests.dfs([0, 0], [99, 99])
+            if path:
+                result = Running_Tests.etf(curr_test[2])
+                if result == True:
+                    success += 1
+                numTests -= 1
+        f = open("Strategy_4_Success_Rate.txt", "a")
+        f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
+    f = open("Strategy_4_Success_Rate.txt", "a")
+    f.write(str(curr_test[2]) + " " + str(success / 10) + "\n")
 
     plot = pd.read_csv('Strategy_4_Success_Rate.txt', sep='\s+', header=None)
     plot = pd.DataFrame(plot)

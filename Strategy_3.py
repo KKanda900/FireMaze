@@ -247,17 +247,29 @@ class MazeGUI:
         # return [] is there is no feasible route
         return []
 
+<<<<<<< HEAD
     # this is the name of strategy 3: Codename Agent Fire
     def cat(self):
         ALIVE = True  # indicates if the agent is alive which it will be when it starts
         start = (0, 0)  # we want to start in the beginning of the maze
         # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through
+=======
+    # this is the name of strategy 3: escape the fire
+    def etf(self):
+        ALIVE = True # indicates if the agent is alive which it will be when it starts
+        start = (0, 0) # we want to start in the beginning of the maze
+        # keep going until ALIVE turns to False (indicating the agent died or no path) or if the agent made it through 
+>>>>>>> 3b69592214d0828ef1d1f2a5eeb29c990c962db4
         while ALIVE:
             # generate the fire at a given rate based on the command line
             self.generate_fire_maze(float(sys.argv[4]))
             #time.sleep(1) # for calculation
             escape_route = self.fire_route_search(start)
+<<<<<<< HEAD
             if len(escape_route) == 0:  # indicates the agent died
+=======
+            if len(escape_route) == 0: # indicates the agent died
+>>>>>>> 3b69592214d0828ef1d1f2a5eeb29c990c962db4
                 ALIVE = False
                 break
             # indicates the agent made it through
@@ -265,11 +277,18 @@ class MazeGUI:
                 break
             # keep drawing the agent going through the maze
             self.draw_path(escape_route[1])
+<<<<<<< HEAD
             # because we are drawing one path at a time make start the next position
             start = escape_route[1]
 
         return ALIVE
 
+=======
+            start = escape_route[1] # because we are drawing one path at a time make start the next position
+            
+        return ALIVE
+    
+>>>>>>> 3b69592214d0828ef1d1f2a5eeb29c990c962db4
     # same drawing mechanism used to draw the static mazes except we indicate a single position which we draw in the maze instead of a full path
     def draw_path(self, position):  # modified drawing function to go based on a single position
         self.x = 0  # reset x for drawing
