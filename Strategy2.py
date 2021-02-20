@@ -141,8 +141,8 @@ class MazeGUI:
                     cell = pygame.Rect(  # draws the actual square cell
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
-                pygame.display.update()
                 self.x += 5
+        pygame.display.update()
 
         return self.tracking_obstacles
 
@@ -300,7 +300,7 @@ def start():
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 500))
+    screen = pygame.display.set_mode((700, 700))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()

@@ -275,7 +275,7 @@ def start():
     # inital conditions to start pygame
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((1000, 500))
+    screen = pygame.display.set_mode((700, 700))
     screen.fill('white')
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
