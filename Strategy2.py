@@ -18,9 +18,6 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
-current1 = 0
-dimensions = 0
-
 class MazeGUI:
     x, y = 0, 0
     cell_size = 5
