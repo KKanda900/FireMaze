@@ -295,7 +295,7 @@ def start():
     # command line arguments
     dim = int(sys.argv[1])
     probability = float(sys.argv[2])
-    flammability = float(sys.argv[3])
+    flammability = float(sys.argv[4])
 
     # inital conditions to start pygame
     pygame.init()
