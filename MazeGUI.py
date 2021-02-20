@@ -1,9 +1,4 @@
-import pygame
-import sys
-import random
-import numpy
-import math
-import time
+import pygame, sys, random, numpy, math, time
 from collections import deque
 import Strategy_1 as s1
 import Strategy2 as s2
@@ -21,16 +16,22 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
+'''
 
+MazeGUI class
+
+Description: Where the visualization of the mazing solving algorithms is placed including DFS, BFS and A star.
+
+'''
 class MazeGUI:
-    x, y = 0, 0
-    cell_size = 5
-    dim = 10
-    tracking_obstacles = []
-    tracking_array = []
-    fringe = []
-    visited = []
-    display = None
+    x, y = 0, 0 # these are to draw the rectangle sizes to create the maze
+    cell_size = 5 # determines the cell size to draw 
+    dim = 10 # default value for the dim size
+    tracking_obstacles = [] # tracks obstacles created in the build maze function
+    tracking_array = [] # copy of tracking_obstacles
+    fringe = [] # fringe utilized in dfs
+    visited = [] # visited array utilized in dfs
+    display = None # screen to draw the GUI
 
     # this is where the logic to build the maze is based to create based on a certain obstacle density
     def build_maze(self, screen, size, probability):
@@ -48,15 +49,16 @@ class MazeGUI:
             i = random.choice(dim_array)
             j = random.choice(dim_array)
             if i == 0 and j == 0:  # this is what we will define as a start node with yellow
-                pass
-            elif i == size - 1 and j == size - 1:
-                pass
+                pass # cant place an obstacle in the starting
+            elif i == size - 1 and j == size - 1: 
+                pass # can't place an obstacle in the ending
             else:
                 arr = [0, 1]  # these will represent random choices
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
                     tracking_array[i][j] = 1
                     obstacles -= 1
 
+        # draw the visual
         for k in range(0, size):
             self.x = 5
             self.y += 5
@@ -65,15 +67,15 @@ class MazeGUI:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size-1 and b == size-1:
+                elif k == size-1 and b == size-1: # this will define the ending node (G)
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
+                elif tracking_array[k][b] == 1: # this will define an obstacle
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
-                else:
+                else: # anything else draw the maze design
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
@@ -81,8 +83,8 @@ class MazeGUI:
                 self.x += 5
 
         pygame.display.update()
-        self.tracking_obstacles = tracking_array
-        self.tracking_array = tracking_array
+        self.tracking_obstacles = tracking_array # update tracking_obstacles the global maze
+        self.tracking_array = tracking_array # update this one for DFS
         return self.tracking_obstacles
 
     # this is for dfs only because it creates a path to start from and a path to end
@@ -112,6 +114,7 @@ class MazeGUI:
                     tracking_array[i][j] = 1
                     obstacles -= 1
 
+        # draw positions in the maze
         for k in range(0, size):
             self.x = 5
             self.y += 5
@@ -121,23 +124,23 @@ class MazeGUI:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
-                elif k == ending[0] and b == ending[1]:
+                elif k == ending[0] and b == ending[1]: # ending node
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
+                elif tracking_array[k][b] == 1: # obstacles
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
-                else:
+                else: # cell design
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 self.x += 5
         pygame.display.update()
 
-        self.tracking_obstacles = tracking_array
-        self.tracking_array = tracking_array
+        self.tracking_obstacles = tracking_array # update global representation
+        self.tracking_array = tracking_array # copy
         return self.tracking_obstacles
 
     def distance_calculator(self, start):  # calculates the eucledian distance between current point and goal
@@ -155,6 +158,7 @@ class MazeGUI:
             fringe.append(child[0])
             return fringe
 
+        # iterates the fringe to find the smallest child and sort based off that for the future states
         for i in range(0, len(fringe)):
             curr_child_dist = self.distance_calculator(fringe[i])
             if child_dist + cost[child[0][0]][child[0][1]] <= curr_child_dist + cost[fringe[i][0]][fringe[i][1]] and child[0] not in return_array:
@@ -522,8 +526,6 @@ class MazeGUI:
                 self.x += 5
 
 # this is how we will start the MazeGUI visualization
-
-
 def start():
     # inital conditions to start pygame
     pygame.init()
@@ -565,7 +567,7 @@ def start():
     elif sys.argv[3] == 's2':  # run s2
         s2.start()
     elif sys.argv[3] == 's3':  # otherwise run s3
-        s3.strategy_3()
+        s3.start()
 
     # pygame variables in order to create the visualization and to run pygame in general
     running = True

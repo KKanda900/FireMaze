@@ -21,7 +21,7 @@ class MazeGUI:
     display = None
     fire_array = None
 
-    # this is where the logic to build the maze is based to create based on a certain obstacle density
+    # this is where the logic to build the maze is based to create based on a certain obstacle density (same logic as in for the static mazes)
     def build_maze(self, screen, size, probability):
         self.x = 0 # reset x upon creating the maze again
         self.y = 0 # reset y upon creating the maze again
@@ -48,9 +48,7 @@ class MazeGUI:
 
         for k in range(0, size):
             self.x = 5
-
             self.y += 5
-
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(self.x, self.y, self.cell_size, self.cell_size)
@@ -71,14 +69,16 @@ class MazeGUI:
         self.tracking_obstacles = tracking_array
         return self.tracking_obstacles
 
-
+    # check if the bounds are valid for the given maze
     def check_valid_bounds(self, i, j, pop_value, arr):
+        # arg i indicate direction +1 or -1 for up and down
         i = pop_value[0] + i
+        # arg j indicates direction +1 or -1 for left and right
         j = pop_value[1] + j
         if i >= 0 and i < len(arr) and j >= 0 and j < len(arr):
-            return True
+            return True  # in bounds, return true
         else:
-            return False
+            return False  # not in bounds, return false
 
     def generate_fire_maze1(self, probability, bln):  # bln is to check if it's the first fire
         q = probability
@@ -117,8 +117,8 @@ class MazeGUI:
 
         return self.tracking_obstacles
 
+    # this is where strategy 1 wil start from
     def strategy1(self):
-
         self.generate_fire_maze1(float(sys.argv[4]), True)  # ignite the first fire in the maze
         time.sleep(1.5)
         path = self.bfs_tree_search()  # run a bfs search for the path from start to goal
@@ -140,6 +140,7 @@ class MazeGUI:
             self.generate_fire_maze1(float(sys.argv[4]), False)  # update the fire in maze
             time.sleep(.5)  # makes it easier to visualize how the fire and agent are moving in the maze
 
+    # modified BFS for the purposes of strategy 1
     def bfs_tree_search(self):
         arr = self.tracking_obstacles
 
@@ -223,6 +224,7 @@ class MazeGUI:
                         path.append(current)
         return []
 
+    # function to draw the path one spot at a time
     def draw_path(self, position):  # arr contains the coordinates of the path to draw
         self.x = 0
         self.y = 0
@@ -234,9 +236,7 @@ class MazeGUI:
 
         for k in range(0, size):
             self.x = 5
-
             self.y += 5
-
             for b in range(0, size):
                 if k == 0 and b == 0:  # this is what we will define as a start node with yellow
                     cell = pygame.Rect(
@@ -265,7 +265,7 @@ class MazeGUI:
                 pygame.display.update()
                 self.x += 5
 
-
+# this is where the the strategy will start from
 def start():
 
     # command line arguments
@@ -300,6 +300,6 @@ def start():
         # update pygame's display to display everything
         pygame.display.update()
 
-
+# main method to start the program
 if __name__ == "__main__":
     start()

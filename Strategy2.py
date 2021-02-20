@@ -18,6 +18,7 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
+
 class MazeGUI:
     x, y = 0, 0
     cell_size = 5
@@ -108,38 +109,6 @@ class MazeGUI:
                             fire_array[i][j] = 2
                             # update the actual maze array
                             self.tracking_obstacles[i][j] = 2
-        self.x = 0
-        self.y = 0
-        size = self.dim
-        screen = self.display
-        tracking_array = self.tracking_obstacles
-        #draws the maze with fire spots
-        for k in range(0, size):
-            self.x = 5
-            self.y += 5
-            for b in range(0, size):
-                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size-1 and b == size-1:  # goal node
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:  # obstacle cell
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell)
-                elif fire_array[k][b] == 2:  # fire cell
-                    cell = pygame.Rect(
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLUE, cell)
-                else:
-                    cell = pygame.Rect(  # draws the actual square cell
-                        self.x, self.y, self.cell_size, self.cell_size)
-                    pygame.draw.rect(screen, BLACK, cell, 1)
-                self.x += 5
-        pygame.display.update()
 
         return self.tracking_obstacles
 

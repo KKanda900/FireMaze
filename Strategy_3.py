@@ -16,28 +16,33 @@ BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
 # these nodes will be placed in a 2D array to represent the Node's probability of catching on fire and the value (0 for clear cell, 1 for occupied with obstacle, 2 for occupied with fire)
-
-
 class FireNode:
-    fire_prob = 0.0
-    value = 0
+    fire_prob = 0.0 # indicates the probability of a cell to catch on fire
+    value = 0 # indicates what the cell is (open, fire, or obstacle)
 
     def __init__(self, value, prob_fire):
         self.fire_prob = prob_fire
         self.value = value
 
 
-class MazeGUI:
-    x, y = 0, 0
-    cell_size = 5
-    dim = 10
-    tracking_obstacles = []
-    display = None
-    fire_array = None
-    fire_maze = None
-    fire_index = 0
+'''
 
-    # this is where the logic to build the maze is based to create based on a certain obstacle density
+MazeGUI class
+
+Description: Where the visualization of strategy 3 is going to be placed.
+
+'''
+class MazeGUI:
+    x, y = 0, 0 # coordinates for drawing the maze in a certain location
+    cell_size = 5 # cell size for each cell in the maze
+    dim = 10 # default dim size 
+    tracking_obstacles = [] # used for dfs
+    display = None # holds the screen to display the visual
+    fire_array = None # keeps track of the fire
+    fire_maze = None # representation of the Maze with all the fire
+    fire_index = 0 # index value for when generate the maze
+
+    # this is where the logic to build the maze is based to create based on a certain obstacle density (same logic as in the static mazes)
     def build_maze(self, screen, size, probability):
         self.dim = size
         self.display = screen
@@ -316,9 +321,7 @@ class MazeGUI:
                 self.x += 5
 
 # this is where we will house the logic for strategy 3 visualization
-
-
-def strategy_3():
+def start():
     # command line arguments
     dim = int(sys.argv[1])
     probability = float(sys.argv[2])
@@ -352,4 +355,4 @@ def strategy_3():
 
 # this is where strategy 3 method will be launched from
 if __name__ == "__main__":
-    strategy_3()
+    start()
