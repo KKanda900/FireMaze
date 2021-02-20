@@ -214,7 +214,7 @@ class MazeGUI:
         self.generate_fire_maze1(self.display, prob, True)
         # Path from upper left to bottom right
         path = self.bfs_tree_search1((0, 0), (self.dim-1, self.dim-1))
-        if path == False:
+        if path == False: # terminating case (no path)
             return False
         path1.append(path[0])  # Path exists adds 1st element of path to path1
         x = len(path1)
@@ -240,14 +240,18 @@ class MazeGUI:
     def draw_path(self, position):  # arr contains the coordinates of the path to draw
         self.x = 0
         self.y = 0
+        # sets screen to display
         screen = self.display
+        # sets size to dimension
         size = self.dim
+        # sets tracking array to tracking obstacles
         tracking_array = self.tracking_obstacles
         curr = None
-
+        # sets curr to the current ordered pair to draw
         curr = position
+        # sets tracking array at point curr to 3
         tracking_array[curr[0]][curr[1]] = 3
-
+        # iterates through tracking array to draw the total maze
         for k in range(0, size):
             self.x = 5
             self.y += 5
@@ -256,30 +260,30 @@ class MazeGUI:
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, YELLOW, cell)
-                elif k == size - 1 and b == size - 1:
+                elif k == size - 1 and b == size - 1: # This represents a goal node with green
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, GREEN, cell)
-                elif tracking_array[k][b] == 1:
+                elif tracking_array[k][b] == 1: # This represents a blocked node with black
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell)
-                elif tracking_array[k][b] == 2:
+                elif tracking_array[k][b] == 2: # This represents a fire node with blue
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLUE, cell)
-                elif tracking_array[k][b] == 3:
+                elif tracking_array[k][b] == 3: # This represents the current node with red
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, RED, cell)
-                else:
+                else: # This draws the cell design
                     cell = pygame.Rect(
                         self.x, self.y, self.cell_size, self.cell_size)
                     pygame.draw.rect(screen, BLACK, cell, 1)
                 pygame.display.update()
                 self.x += 5
 
-
+# method to start the strategy
 def start():
 
     # command line arguments
@@ -295,10 +299,13 @@ def start():
     pygame.display.set_caption("Python Maze Generator")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont('Comic Sans MS', 30)
+    # Uses this class to create maze object
     maze = MazeGUI()
+    # builds starting maze 
     maze.build_maze(screen, dim, probability)
+    # Run strategy2 with flammability rate
     maze.strategy2(flammability)
-
+    # steps needed to run pygame
     running = True
 
     index = 0
@@ -312,6 +319,6 @@ def start():
         # update pygame's display to display everything
         pygame.display.update()
 
-
+# main method to start the program
 if __name__ == "__main__":
    start()
