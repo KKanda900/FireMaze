@@ -185,7 +185,6 @@ class MazeGUI:
 
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
-            #print(fringe)
             current = fringe.popleft()
 
             # agent is on fire
@@ -217,7 +216,6 @@ class MazeGUI:
 
                 bfs_route.append(start)
                 bfs_route.reverse()
-                #print(bfs_route)
                 return bfs_route
 
             else:

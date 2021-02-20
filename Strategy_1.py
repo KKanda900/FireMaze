@@ -134,7 +134,6 @@ class MazeGUI:
             self.draw_path(curr)  # draw the current step on the maze
             curr = path.pop()  # replace the current cell with next step in path
             if self.tracking_obstacles[curr[0]][curr[1]] == 2:  # is the next step agent is going to take is already on fire we stop the code
-                print("agent is toast")
                 return False
             if curr[0] == dimension and curr[1] == dimension:  # if current is at the goal cell then we return true and agent has reached the goal
                 return True
@@ -142,7 +141,6 @@ class MazeGUI:
             time.sleep(.5)  # makes it easier to visualize how the fire and agent are moving in the maze
 
     def bfs_tree_search(self):
-        # print('start bfs')
         arr = self.tracking_obstacles
 
         # now define the start and end node which in our case is the first indicies and the last indicies respectively
@@ -161,18 +159,15 @@ class MazeGUI:
 
         # now iterate through the fringe to check for the path
         while len(fringe) > 0:
-            # print(fringe)
             current = fringe.popleft()
             visited[current[0]][current[1]] = True
             if current == goal:
                 path.append(current)
                 path.reverse()
-                # print('path',path)
                 # now that we found the end node, let's perform a recursive backtracking algorithm to find the actual path
                 bfs_route = []
                 while path[0] != start:
                     new_curr = path.pop(0)
-                    # print('bfs_route_start',bfs_route)
                     if not bfs_route:
                         bfs_route.append(new_curr)
                     # top
@@ -195,7 +190,6 @@ class MazeGUI:
                 bfs_route.append(start)
 
                 bfs_route.reverse()
-                # print('bfs_route_end',bfs_route)
 
                 return bfs_route
 
