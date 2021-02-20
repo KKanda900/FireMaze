@@ -53,8 +53,34 @@ class MazeGUI:
                 if random.choice(arr) == 0 and obstacles != 0 and tracking_array[i][j] == 0:
                     tracking_array[i][j] = 1
                     obstacles -= 1
+
         self.tracking_array = tracking_array
         self.tracking_obstacles = tracking_array
+        
+        for k in range(0, size):
+            self.x = 5
+            self.y += 5
+            for b in range(0, size):
+                if k == 0 and b == 0:  # this is what we will define as a start node with yellow
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, YELLOW, cell)
+                elif k == size-1 and b == size-1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, GREEN, cell)
+                elif tracking_array[k][b] == 1:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell)
+                else:
+                    cell = pygame.Rect(
+                        self.x, self.y, self.cell_size, self.cell_size)
+                    pygame.draw.rect(screen, BLACK, cell, 1)
+
+                self.x += 5
+        pygame.display.update()
+
         return self.tracking_obstacles
 
     def check_valid_bounds(self, i, j, pop_value, arr):
@@ -186,7 +212,6 @@ class MazeGUI:
         path1 = []
         # generating fire before 1st step
         self.generate_fire_maze1(self.display, prob, True)
-        time.sleep(1)
         # Path from upper left to bottom right
         path = self.bfs_tree_search1((0, 0), (self.dim-1, self.dim-1))
         if path == False:
@@ -202,7 +227,6 @@ class MazeGUI:
             path1 = self.bfs_tree_search1(path1[0], (self.dim-1, self.dim-1))
             if path1 == False:  # Terminating case (no path)
                 return False
-            time.sleep(1)
             # Takes a step forward and checks path from 1st element of new path1 to bottom right
             path1 = self.bfs_tree_search1(path1[1], (self.dim-1, self.dim-1))
             if path1 == False:  # Terminating case (no path)
@@ -273,7 +297,7 @@ def start():
     font = pygame.font.SysFont('Comic Sans MS', 30)
     maze = MazeGUI()
     maze.build_maze(screen, dim, probability)
-    print(maze.strategy2(flammability))
+    maze.strategy2(flammability)
 
     running = True
 

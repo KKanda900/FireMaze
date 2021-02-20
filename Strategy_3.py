@@ -15,7 +15,12 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 
-# these nodes will be placed in a 2D array to represent the Node's probability of catching on fire and the value (0 for clear cell, 1 for occupied with obstacle, 2 for occupied with fire)
+'''
+
+FireNode class
+
+Description: This node class will help keep track of the fire and the probability at each point of the fire.
+'''
 class FireNode:
     fire_prob = 0.0 # indicates the probability of a cell to catch on fire
     value = 0 # indicates what the cell is (open, fire, or obstacle)
